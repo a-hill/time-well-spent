@@ -11,6 +11,7 @@ import openface
 
 class Skeleton:
     def setup(self):
+        self.facesInRoom = []
         self.align = openface.AlignDlib(????????) #TODO
         self.net = openface.TorchNeuralNet(??????????, ????????) #TODO
 
@@ -41,24 +42,29 @@ class Skeleton:
 
         return squaredl2 < 1.0
 
-    def run(self):
-        facesInRoom = []
+    def addFaceToRoom(self, rep):
+        if not any([faceMatch(x, rep) for x in facesInRoom]):
+            facesInRoom.append(rep)
 
+    def removeFaceFromRoom(self, rep):
+        facesInRoom = [x for x in facesInRoom if not faceMatch(x, rep)]
+
+    def run(self):
         quit = False
         while not quit:
             # check for people entering
             image = getEnterCameraImage() #TODO
             rep = getVectorRep(image)
 
-            if rep is not None and not any([faceMatch(x, rep) for x in facesInRoom]):
-                facesInRoom.append(rep)
+            if rep is not None:
+                addFaceToRoom(rep)
 
             # check for people leaving
             image = getExitCameraImage() #TODO
             rep = getVectorRep(image)
 
             if rep is not None:
-                facesInRoom = [x for x in facesInRoom if not faceMatch(x, rep)]
+                removeFaceFromRoom(rep)
 
 skeleton = Skeleton()
 skeleton.setup()
