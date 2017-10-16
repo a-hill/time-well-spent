@@ -29,21 +29,18 @@ parser.add_argument('--verbose', action='store_true')
 args = parser.parse_args()
 # END of needs deleting
 
-
-start = time.time()
-difference = time.time() - start
-
 align = openface.AlignDlib(args.dlibFacePredictor)
 net = openface.TorchNeuralNet(args.networkModel, args.imgDim)
 
 # Get Representation of image
 # Method mostly taken from demo file from openface
-def getRep(imgPath):
+def getRep(image):
     # if args.verbose:
     #    print("Processing {}.".format(imgPath))
 
     # Image Import
-    bgrImg = cv2.imread(imgPath)
+    #bgrImg = cv2.imread(imgPath)
+    bgrImg = image
     if bgrImg is None:
         raise Exception("Unable to load image: {}".format(imgPath))
     rgbImg = cv2.cvtColor(bgrImg, cv2.COLOR_BGR2RGB)
@@ -52,7 +49,7 @@ def getRep(imgPath):
     #    print("  + Original size: {}".format(rgbImg.shape))
 
     # Face Detection
-    start = time.time()
+    #start = time.time()
     bb = align.getLargestFaceBoundingBox(rgbImg)
     if bb is None:
         #raise Exception("Unable to find a face: {}".format(imgPath))
@@ -62,7 +59,7 @@ def getRep(imgPath):
     #    print("  + Face detection took {} seconds.".format(time.time() - start))
 
     # Image Alignment
-    start = time.time()
+    #start = time.time()
     alignedFace = align.align(args.imgDim, rgbImg, bb,
                               landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
     if alignedFace is None:
@@ -71,7 +68,7 @@ def getRep(imgPath):
     #    print("  + Face alignment took {} seconds.".format(time.time() - start))
 
     # Openface pass
-    start = time.time()
+    # start = time.time()
     rep = net.forward(alignedFace)
 
     #if args.verbose:
@@ -81,23 +78,56 @@ def getRep(imgPath):
     #    print("-----\n")
     return rep
 
-img1 = 'images/alessio.jpg'
-img2 = 'images/andrew1.jpg'
+#img1 = 'images/alessio.jpg'
+#img2 = 'images/andrew1.jpg'
+
+# Set-up video feed
+cap = cv2.VideoCapture(0)
 
 # On entry
-rep1 = getRep(img1)
+ret, frame = cap.read()
+entry_time = time.time()
+rep1 = getRep(frame)
 while rep1 is None:
     # Get Next Image
-    rep1 = getRep(img1)
+    ret, frame = cap.read()
+    entry_time = time.time()
+    rep1 = getRep(frame)
 
-# On Exit
-rep2 = getRep(img2)
+print 'entry represntation formed, sleeping'
+# Close video stream
+cap.release()
+
+# Sleep 5 SECONDS
+time.sleep(5)
+
+print 'waking up'
+
+# Set-up video feed
+cap = cv2.VideoCapture(0)
+# On exit
+ret, frame = cap.read()
+time_difference = time.time() - entry_time
+rep2 = getRep(frame)
 while rep2 is None:
     # Get Next Image
-    rep2 = getRep(img2)
+    ret, frame = cap.read()
+    time_difference = time.time() - entry_time
+    rep2 = getRep(frame)
 
+# Close video stream
+cap.release()
+
+print 'exit represntation formed'
+
+# Calculate distance vector represntation (?)
 d = rep1 - rep2
 
+# Distance number (0 to 4)
 distance = np.dot(d, d)
 
+print('')
+print('Distance:')
 print(distance)
+print('Time:')
+print(time_difference)
