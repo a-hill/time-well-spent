@@ -82,6 +82,15 @@ def getRep(image):
     #    print("-----\n")
     return rep
 
+def checkIfSamePerson(rep1, rep2):
+    if rep2 is not None and rep1 is not None:
+        d = rep1 - rep2
+        distance = np.dot(d, d)
+        print('')
+        print('Distance:')
+        print distance
+        return distance < 0.99
+
 #img1 = 'images/alessio.jpg'
 #img2 = 'images/andrew1.jpg'
 
@@ -112,7 +121,8 @@ cap = cv2.VideoCapture(0)
 ret, frame = cap.read()
 time_difference = time.time() - entry_time
 rep2 = getRep(frame)
-while rep2 is None:
+
+while not checkIfSamePerson(rep1, rep2):
     # Get Next Image
     ret, frame = cap.read()
     time_difference = time.time() - entry_time
@@ -123,15 +133,6 @@ cap.release()
 
 print 'exit representation formed'
 
-# Calculate distance vector represntation (?)
-d = rep1 - rep2
-
-# Distance number (0 to 4)
-distance = np.dot(d, d)
-
-print('')
-print('Distance:')
-print(distance)
 print('Time:')
 print(time_difference)
 
