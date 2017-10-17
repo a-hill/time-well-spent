@@ -3,15 +3,19 @@ import argparse
 import itertools
 import cv2
 import os
-
+import pyttsx
 import numpy as np
 np.set_printoptions(precision=2)
 
 import openface
 
+#Gets path of where you are now
 fileDir = os.path.dirname(os.path.realpath(__file__))
+print (fileDir)
+
 modelDir = os.path.join(fileDir, '..', 'models')
 dlibModelDir = os.path.join(modelDir, 'dlib')
+print(dlibModelDir)
 openfaceModelDir = os.path.join(modelDir, 'openface')
 
 # Figure out how to delete this
@@ -97,9 +101,8 @@ while rep1 is None:
 print 'entry represntation formed, sleeping'
 # Close video stream
 cap.release()
-
-# Sleep 5 SECONDS
-time.sleep(5)
+#waiting for user input to take next image instead of sleeping
+raw_input("Press enter to capture again")
 
 print 'waking up'
 
@@ -118,7 +121,7 @@ while rep2 is None:
 # Close video stream
 cap.release()
 
-print 'exit represntation formed'
+print 'exit representation formed'
 
 # Calculate distance vector represntation (?)
 d = rep1 - rep2
@@ -131,3 +134,6 @@ print('Distance:')
 print(distance)
 print('Time:')
 print(time_difference)
+
+os.system('say ' + str(int(time_difference) // 60) + ' minutes and ' + str(round(time_difference, 2) % 60) + ' seconds')
+
