@@ -10,10 +10,13 @@ np.set_printoptions(precision=2)
 import openface
 
 class Skeleton:
-    def setup(self):
+    def __init__(self):
         self.facesInRoom = []
+
+        # TODO: set up these things properly
         self.align = openface.AlignDlib(????????) #TODO
         self.net = openface.TorchNeuralNet(??????????, ????????) #TODO
+        self.cap = cv2.VideoCapture(0)
 
     def getVectorRep(self, bgrImg):
         # takes in an image (not an image path!)
@@ -43,29 +46,48 @@ class Skeleton:
         return squaredl2 < 1.0
 
     def addFaceToRoom(self, rep):
+        # TODO: replace with database access
         if not any([faceMatch(x, rep) for x in facesInRoom]):
-            facesInRoom.append(rep)
+            facesInRoom.append([rep, time.time()])
 
     def removeFaceFromRoom(self, rep):
-        facesInRoom = [x for x in facesInRoom if not faceMatch(x, rep)]
+        # TODO: replace with database access
+        newFacesInRoom = []
+        for face in facesInRoom:
+            if faceMatch(face[0], rep):
+                print("This face was in the room for: ", time.time() - face[1])
+            else:
+                newFacesInRoom.append(face)
+        facesInRoom = newFacesInRoom
+
+    def getEnterCameraImage(self):
+        # TODO: replace this with input from a camera
+        ret, frame = cap.read()
+        return frame
+
+    def getExitCameraImage(self):
+        # TODO: replace this with input from another camera
+        ret, frame = cap.read()
+        return frame
 
     def run(self):
         quit = False
         while not quit:
             # check for people entering
-            image = getEnterCameraImage() #TODO
+            image = getEnterCameraImage()
             rep = getVectorRep(image)
 
             if rep is not None:
                 addFaceToRoom(rep)
 
             # check for people leaving
-            image = getExitCameraImage() #TODO
+            image = getExitCameraImage()
             rep = getVectorRep(image)
 
             if rep is not None:
                 removeFaceFromRoom(rep)
 
+        cap.release()
+
 skeleton = Skeleton()
-skeleton.setup()
 skeleton.run()
