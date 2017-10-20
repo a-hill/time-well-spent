@@ -140,6 +140,7 @@ cap = cv2.VideoCapture(0)
 #ret, frame = cap.read()
 #time_difference = time.time() - entry_time
 #rep2 = getRep(frame)
+i = 0
 while True:
     # Get Next Image
     ret, frame = cap.read()
@@ -148,6 +149,7 @@ while True:
         for f in faces:
             if checkIfSamePerson(f[0], rep2):
                 print 'Faces found = ' + str(i)
+                i = i + 1
                 print ('Your Time: ')
                 time_difference = time.time() - f[1]
                 print(time_difference)
