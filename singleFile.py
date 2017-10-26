@@ -106,7 +106,11 @@ while len(faces) < 2:
     # Get Next Image
     ret, frame = cap.read()
     entry_time = time.time()
+
+    t = time.time()
     rep1 = getRep(frame)
+    l = time.time() - t
+    print("It took ", l, " seconds to process that")
     if rep1 is not None:
         #Before appending, check if duplicate exists
         if len(faces) > 0:
@@ -122,7 +126,7 @@ while len(faces) < 2:
             print'initial case'
             a_face = (rep1, entry_time);
             faces.append(a_face)
-            
+
 
 
 
@@ -168,4 +172,3 @@ cap.release()
 #print(time_difference)
 
 #os.system('say ' + str(int(time_difference) // 60) + ' minutes and ' + str(round(time_difference, 2) % 60) + ' seconds')
-

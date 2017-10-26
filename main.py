@@ -5,12 +5,14 @@ import os
 import pyttsx
 import numpy as np
 import cv2
+import random
 np.set_printoptions(precision=2)
 
 import openface
 
 class Main:
     def __init__(self):
+        random.seed()
         self.facesInRoom = []
 
         # Gets path of where you are now
@@ -37,6 +39,12 @@ class Main:
         self.align = openface.AlignDlib(self.args.dlibFacePredictor)
         self.net = openface.TorchNeuralNet(self.args.networkModel, self.args.imgDim)
         self.cap = cv2.VideoCapture(0)
+
+        self.a1 = cv2.imread("a1.jpg")
+        self.a2 = cv2.imread("a2.jpg")
+        self.b1 = cv2.imread("b1.jpg")
+        self.b2 = cv2.imread("b2.jpg")
+        self.blue = cv2.imread("blue.jpg")
 
     def getVectorRep(self, bgrImg):
         # takes in an image (not an image path!)
@@ -85,17 +93,28 @@ class Main:
 
     def getEnterCameraImage(self):
         # TODO: replace this with input from a camera
-        ret, frame = self.cap.read()
-        return frame
+        #ret, frame = self.cap.read()
+        #return frame
+        r = random.random()
+        if r < 0.25:
+            return self.a1
+        elif r < 0.5:
+            return self.a2
+        elif r < 0.75:
+            return self.b1
+        else:
+            return self.b2
 
     def getExitCameraImage(self):
         # TODO: replace this with input from another camera
-        ret, frame = self.cap.read()
-        return frame
+        #ret, frame = self.cap.read()
+        #return frame
+        return self.getEnterCameraImage()
 
     def run(self):
         quit = False
         while not quit:
+            t = time.time()
 
             # check for people leaving
             image = self.getExitCameraImage()
@@ -103,7 +122,7 @@ class Main:
 
             if rep is not None:
                 self.removeFaceFromRoom(rep)
-                
+
             # check for people entering
             image = self.getEnterCameraImage()
             rep = self.getVectorRep(image)
@@ -111,6 +130,8 @@ class Main:
             if rep is not None:
                 self.addFaceToRoom(rep)
 
+            print("This tick took ", time.time() - t, " seconds to run")
+            print("Ther are ", len(self.facesInRoom), " people in the room")
 
         self.cap.release()
 
