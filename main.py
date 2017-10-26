@@ -11,33 +11,23 @@ np.set_printoptions(precision=2)
 import openface
 
 class Main:
+    DEFAULT_IMAGE_DIMENSION = 96
+
     def __init__(self):
         random.seed()
         self.facesInRoom = []
 
         # Gets path of where you are now
         fileDir = os.path.dirname(os.path.realpath(__file__))
-        modelDir = os.path.join(fileDir, '..', 'models')
+        modelDir = os.path.join(fileDir, '..', 'openface', 'models')
         dlibModelDir = os.path.join(modelDir, 'dlib')
         openfaceModelDir = os.path.join(modelDir, 'openface')
+        self.DEFAULT_NETWORK_MODEL = os.path.join(openfaceModelDir, 'nn4.small2.v1.t7')
+        self.DEFAULT_FACE_PREDICTOR = os.path.join(dlibModelDir, "shape_predictor_68_face_landmarks.dat")
 
-        # Initialise argument parser
-        parser = argparse.ArgumentParser()
 
-        # Adds the arguments to the argument parser
-        #parser.add_argument('imgs', type=str, nargs='+', help="Input images.")
-        parser.add_argument('--dlibFacePredictor', type=str, help="Path to dlib's face predictor.",
-                            default=os.path.join(dlibModelDir, "shape_predictor_68_face_landmarks.dat"))
-        parser.add_argument('--networkModel', type=str, help="Path to Torch network model.",
-                            default=os.path.join(openfaceModelDir, 'nn4.small2.v1.t7'))
-        parser.add_argument('--imgDim', type=int,
-                            help="Default image dimension.", default=96)
-        parser.add_argument('--verbose', action='store_true')
-
-        self.args = parser.parse_args()
-
-        self.align = openface.AlignDlib(self.args.dlibFacePredictor)
-        self.net = openface.TorchNeuralNet(self.args.networkModel, self.args.imgDim)
+        self.align = openface.AlignDlib(self.DEFAULT_FACE_PREDICTOR)
+        self.net = openface.TorchNeuralNet(self.DEFAULT_NETWORK_MODEL, self.DEFAULT_IMAGE_DIMENSION)
         self.cap = cv2.VideoCapture(0)
 
         self.a1 = cv2.imread("a1.jpg")
@@ -57,7 +47,7 @@ class Main:
             #no face found
             return None
 
-        alignedFace = self.align.align(self.args.imgDim, rgbImg, bb, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+        alignedFace = self.align.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, bb, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
         if alignedFace is None:
             #unable to align face
             return None
@@ -67,7 +57,7 @@ class Main:
         return rep
 
     def faceMatch(self, a, b):
-        if (len(a) != len(b)):
+        if len(a) != len(b):
             return False
 
         # takes in two vectors, returns a boolean if the faces they represent match
@@ -77,12 +67,10 @@ class Main:
         return squaredl2 < 1.0
 
     def addFaceToRoom(self, rep):
-        # TODO: replace with database access
         if not any([self.faceMatch(face, rep) for [face, t] in self.facesInRoom]):
             self.facesInRoom.append([rep, time.time()])
 
     def removeFaceFromRoom(self, rep):
-        # TODO: replace with database access
         newFacesInRoom = []
         for face in self.facesInRoom:
             if self.faceMatch(face[0], rep):
@@ -93,8 +81,6 @@ class Main:
 
     def getEnterCameraImage(self):
         # TODO: replace this with input from a camera
-        #ret, frame = self.cap.read()
-        #return frame
         r = random.random()
         if r < 0.25:
             return self.a1
@@ -107,8 +93,6 @@ class Main:
 
     def getExitCameraImage(self):
         # TODO: replace this with input from another camera
-        #ret, frame = self.cap.read()
-        #return frame
         return self.getEnterCameraImage()
 
     def run(self):
