@@ -1,5 +1,6 @@
 import cv2
 import openface
+import numpy as np
 
 class FaceRecognition():
 
@@ -10,7 +11,6 @@ class FaceRecognition():
         self.net = openface.TorchNeuralNet(networkModelPath, alignedImageDimensions)
 
     def get_rep(self, image, imgDim):
-
         alignedFace = self.align_face(image, imgDim)
         rep = self.net.forward(alignedFace)
         return rep
@@ -32,3 +32,9 @@ class FaceRecognition():
             return None
 
         return alignedFace
+
+    def is_same_person(self, rep1, rep2):
+        if rep2 is not None and rep1 is not None:
+            d = rep1 - rep2
+            distance = np.dot(d, d)
+            return distance < 0.99
