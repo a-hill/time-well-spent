@@ -16,6 +16,7 @@ class VideoInterface():
         ret, frame = cap.read()
 
         if not ret:
-            print "Failed to get frame from webcam"
+            print "Failed to get frame from video stream"
+            frame = None # Check what this returns when reaching the end of video
         cap.release()
         return frame

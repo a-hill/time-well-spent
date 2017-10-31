@@ -56,19 +56,29 @@ class TestOneInOneOut(unittest.TestCase):
         rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
         self.assertTrue(self.faceRecognition.is_same_person(rep1, rep2))
 
-    def test_can_do_time_difference_video(self):
+    def test_can_detect_face_from_video(self):
         videoInterface = VideoInterface(self.testVideoPath)
-        # TODO: some loop until it sees same face
+        # loop until it sees a face
+        frame = videoInterface.get_frame()
+        detected = False
+        while frame is not None:
+            rep = self.faceRecognition.get_rep(frame, self.defaultImageDims)
+            if rep is not None:
+                detected = True
+            frame = videoInterface.get_frame()
+        self.assertTrue(detected)
 
+
+
+            #def test_can_do_time_difference_video(self):
         # obtain and save first face TODO: find way to keep doing it until found??
-        frame1 = videoInterface.get_frame()
-        rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)
-        samePerson = False
-        while not samePerson:
+        #rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)
+        #samePerson = False
+        #while not samePerson:
             # obtain and save second face
-            frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
-            rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
-            samePerson = (self.faceRecognition.is_same_person(rep1, rep2))
+        #    frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
+        #    rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
+        #    samePerson = (self.faceRecognition.is_same_person(rep1, rep2))
         #TODO: assert known time difference with time difference returned from test
 
 

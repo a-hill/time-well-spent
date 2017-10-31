@@ -15,6 +15,7 @@ class FaceRecognition():
         rep = self.net.forward(alignedFace)
         return rep
 
+    # private function
     def align_face(self, image, imgDim):
         # Converts image to format expected by aligner
         rgbImg = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
