@@ -16,7 +16,7 @@ class TestOneInOneOut(unittest.TestCase):
         self.testImagePath = './test_data/alessio.jpg'
         self.andrewImagePath = './test_data/andrew.jpg'
         self.andrewNoBeardImagePath = './test_data/andrew-no-beard.jpg'
-        self.testVideoPath = "./test_data/video.mp4"
+        self.testVideoPath = "./test_data/Abbie3.mov"
 
 
     def test_can_read_image_from_file(self):
@@ -24,10 +24,10 @@ class TestOneInOneOut(unittest.TestCase):
         testImage = videoInterface.get_image_from_file(self.testImagePath)
         self.assertIsInstance(testImage, np.ndarray)
 
-    def test_can_read_frame_from_webcam(self):
-        videoInterface = VideoInterface(0)
-        frame = videoInterface.get_frame()
-        self.assertIsInstance(frame, np.ndarray)
+    # def test_can_read_frame_from_webcam(self):
+    #     videoInterface = VideoInterface(0)
+    #     frame = videoInterface.get_frame()
+    #     self.assertIsInstance(frame, np.ndarray)
 
     def test_can_read_frame_from_video(self):
         videoInterface = VideoInterface(self.testVideoPath)
@@ -59,16 +59,25 @@ class TestOneInOneOut(unittest.TestCase):
     def test_can_detect_face_from_video(self):
         videoInterface = VideoInterface(self.testVideoPath)
         # loop until it sees a face
-        frame = videoInterface.get_frame()
-        detected = False
-        while frame is not None:
-            rep = self.faceRecognition.get_rep(frame, self.defaultImageDims)
-            if rep is not None:
-                detected = True
+        rep = None
+        i = 0
+        while rep is None:
             frame = videoInterface.get_frame()
-        self.assertTrue(detected)
+            if (frame is not None):
+                rep = self.faceRecognition.get_rep(frame, self.defaultImageDims)
+                i = i + 1
+        print i
+        self.assertIsInstance(rep, np.ndarray)
 
-
+    # def test_can_detect_face_from_webcam(self):
+    #     videoInterface = VideoInterface(0)
+    #     # loop until it sees a face
+    #     rep = None
+    #     while rep is None:
+    #         frame = videoInterface.get_frame()
+    #         if (frame is not None):
+    #             rep = self.faceRecognition.get_rep(frame, self.defaultImageDims)
+    #     self.assertIsInstance(rep, np.ndarray)
 
             #def test_can_do_time_difference_video(self):
         # obtain and save first face TODO: find way to keep doing it until found??

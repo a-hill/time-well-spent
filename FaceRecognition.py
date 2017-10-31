@@ -12,8 +12,11 @@ class FaceRecognition():
 
     def get_rep(self, image, imgDim):
         alignedFace = self.align_face(image, imgDim)
-        rep = self.net.forward(alignedFace)
-        return rep
+        if alignedFace is None:
+            return None
+        else:
+            rep = self.net.forward(alignedFace)
+            return rep
 
     # private function
     def align_face(self, image, imgDim):
