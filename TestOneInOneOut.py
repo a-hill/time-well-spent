@@ -15,6 +15,7 @@ class TestOneInOneOut(unittest.TestCase):
         self.faceRecognition = FaceRecognition(self.pathToDLibFacePredictor, self.defaultImageDims, self.pathToTorchNeuralNet)
         self.testImagePath = './test_data/alessio.jpg'
         self.andrewImagePath = './test_data/andrew.jpg'
+        self.andrewNoBeardImagePath = './test_data/andrew-no-beard.jpg'
         self.testVideoPath = "./test_data/video.mp4"
 
 
@@ -46,6 +47,30 @@ class TestOneInOneOut(unittest.TestCase):
         rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)
         rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
         self.assertFalse(self.faceRecognition.is_same_person(rep1, rep2))
+
+    def test_can_tell_if_same_person_photos(self):
+        videoInterface = VideoInterface()
+        frame1 = videoInterface.get_image_from_file(self.andrewNoBeardImagePath)
+        frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
+        rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)
+        rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
+        self.assertTrue(self.faceRecognition.is_same_person(rep1, rep2))
+
+    def test_can_do_time_difference_video(self):
+        videoInterface = VideoInterface(self.testVideoPath)
+        # TODO: some loop until it sees same face
+
+        # obtain and save first face TODO: find way to keep doing it until found??
+        frame1 = videoInterface.get_frame()
+        rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)
+        samePerson = False
+        while not samePerson:
+            # obtain and save second face
+            frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
+            rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
+            samePerson = (self.faceRecognition.is_same_person(rep1, rep2))
+        #TODO: assert known time difference with time difference returned from test
+
 
 
 if __name__ == '__main__':
