@@ -14,7 +14,7 @@ class FaceRecognition():
 
     def get_rep(self, image, imgDim):
         alignedFace = self.align_face(image, imgDim)
-        if alignedFace is None:
+        if alignedFace is None: # Alignment failed
             return None
         else:
             rep = self.net.forward(alignedFace)
@@ -39,7 +39,7 @@ class FaceRecognition():
         return alignedFace
 
     def is_same_person(self, rep1, rep2):
-        if rep2 is not None and rep1 is not None:
+        if rep2 is not None and rep1 is not None: # Check they both exist
             d = rep1 - rep2
             distance = np.dot(d, d)
-            return distance < 0.99
+            return distance < 0.99 # This number comes from openface docs
