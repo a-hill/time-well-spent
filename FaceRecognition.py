@@ -1,6 +1,8 @@
 import cv2
 import openface
 import numpy as np
+from VideoInterface import VideoInterface
+import random
 
 class FaceRecognition():
 
@@ -34,7 +36,6 @@ class FaceRecognition():
 
         if alignedFace is None:  # Alignment failed
             return None
-
         return alignedFace
 
     def is_same_person(self, rep1, rep2):

@@ -3,6 +3,7 @@ import unittest
 from FaceRecognition import FaceRecognition
 from VideoInterface import VideoInterface
 import numpy as np
+import time
 
 
 class TestOneInOneOut(unittest.TestCase):
@@ -17,6 +18,8 @@ class TestOneInOneOut(unittest.TestCase):
         self.andrewImagePath = './test_data/andrew.jpg'
         self.andrewNoBeardImagePath = './test_data/andrew-no-beard.jpg'
         self.testVideoPath = "./test_data/Abbie3.mov"
+        self.testVideoSidePath = "./test_data/Abbie4.mov"
+        self.testVideoWithGapPath = "./test_data/abbie_with_gap.mov"
 
 
     def test_can_read_image_from_file(self):
@@ -24,6 +27,7 @@ class TestOneInOneOut(unittest.TestCase):
         testImage = videoInterface.get_image_from_file(self.testImagePath)
         self.assertIsInstance(testImage, np.ndarray)
 
+    # This test commented out because uses webcam not video so not replicable easily
     # def test_can_read_frame_from_webcam(self):
     #     videoInterface = VideoInterface(0)
     #     frame = videoInterface.get_frame()
@@ -66,9 +70,24 @@ class TestOneInOneOut(unittest.TestCase):
             if (frame is not None):
                 rep = self.faceRecognition.get_rep(frame, self.defaultImageDims)
                 i = i + 1
-        print i
+        self.assertTrue(i == 1) # It should find a face in the first frame
         self.assertIsInstance(rep, np.ndarray)
 
+    # This test commented out because doesn't work
+    # def test_can_detect_face_from_video_side_angle(self):
+    #     videoInterface = VideoInterface(self.testVideoSidePath)
+    #     # loop until it sees a face
+    #     rep = None
+    #     i = 0
+    #     while rep is None:
+    #         frame = videoInterface.get_frame()
+    #         if (frame is not None):
+    #             rep = self.faceRecognition.get_rep(frame, self.defaultImageDims)
+    #             i = i + 1
+    #     print(i)
+    #     self.assertIsInstance(rep, np.ndarray)
+
+    # This test commented out because uses webcam not video so not replicable easily
     # def test_can_detect_face_from_webcam(self):
     #     videoInterface = VideoInterface(0)
     #     # loop until it sees a face
@@ -79,16 +98,21 @@ class TestOneInOneOut(unittest.TestCase):
     #             rep = self.faceRecognition.get_rep(frame, self.defaultImageDims)
     #     self.assertIsInstance(rep, np.ndarray)
 
-            #def test_can_do_time_difference_video(self):
-        # obtain and save first face TODO: find way to keep doing it until found??
-        #rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)
-        #samePerson = False
-        #while not samePerson:
-            # obtain and save second face
-        #    frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
-        #    rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
-        #    samePerson = (self.faceRecognition.is_same_person(rep1, rep2))
-        #TODO: assert known time difference with time difference returned from test
+    def test_can_do_time_difference_video(self):
+        videoInterface = VideoInterface(self.testVideoWithGapPath)
+        rep1 = None
+        while rep1 is None:
+            frame, time1 = videoInterface.get_frame_and_time()
+            rep1 = self.faceRecognition.get_rep(frame, self.defaultImageDims)
+
+        time.sleep(1)
+        samePerson = False
+        while not samePerson:
+           # obtain and save second face
+           frame2, time2 = videoInterface.get_frame_and_time()
+           rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
+           samePerson = (self.faceRecognition.is_same_person(rep1, rep2))
+        self.assertTrue(1.33 <= (time2-time1) <= 1.34)
 
 
 

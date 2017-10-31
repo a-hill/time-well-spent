@@ -20,3 +20,8 @@ class VideoInterface():
             frame = None # Check what this returns when reaching the end of video
         cap.release()
         return frame
+
+    def get_frame_and_time(self):
+        frame = self.get_frame()
+        t = time.time()
+        return frame, t
