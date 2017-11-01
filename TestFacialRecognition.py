@@ -56,7 +56,7 @@ class TestFacialRecognition(unittest.TestCase):
 
     def test_can_detect_multiple_faces(self):
         manyPeople = VideoInterface(self.testMultiplePeopleVideoPath)
-        
+
 
     # This test commented out because doesn't work
     # def test_can_detect_face_from_video_side_angle(self):

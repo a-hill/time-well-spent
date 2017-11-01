@@ -46,8 +46,6 @@ class FaceRecognition():
         alignedFace = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, bb,
                                          landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
 
-        if alignedFace is None:  # Alignment failed
-            return None
         return alignedFace
 
     #private function
@@ -72,7 +70,10 @@ class FaceRecognition():
         return alignedFaces
 
     def is_same_person(self, rep1, rep2):
-        if rep2 is not None and rep1 is not None:  # Check they both exist
+        if len(rep1) != len(rep2):
+            return False
+
+        if rep2 is not None and rep1 is not None: # Check they both exist
             d = rep1 - rep2
             distance = np.dot(d, d)
             return distance < 0.99  # This number comes from openface docs
