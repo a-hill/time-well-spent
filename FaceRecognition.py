@@ -34,11 +34,12 @@ class FaceRecognition():
         # Crops and rotates according to bb
         alignedFace = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, bb, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
 
-        if alignedFace is None:  # Alignment failed
-            return None
         return alignedFace
 
     def is_same_person(self, rep1, rep2):
+        if len(rep1) != len(rep2):
+            return False
+
         if rep2 is not None and rep1 is not None: # Check they both exist
             d = rep1 - rep2
             distance = np.dot(d, d)
