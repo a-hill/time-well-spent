@@ -10,6 +10,7 @@ class MainMultiple():
 	    self.pathToTorchNeuralNet = './../openface/models/openface/nn4.small2.v1.t7'
 	    self.faceRecognition = FaceRecognition(self.pathToDLibFacePredictor, self.defaultImageDims, self.pathToTorchNeuralNet)
 	    self.peopleInRoom = []
+	    self.cumulativeTimeSpent = 0
 
 	def detect(self, videoInterface):
 	    currentRep = None
@@ -23,17 +24,18 @@ class MainMultiple():
 	    	if self.faceRecognition.is_same_person(currentRep, rep):
 	    		time_difference = currentTime - entryTime
 	    		if time_difference < 3: # This is the case where someone is entering and their face is still in the next frame
-	    			print "seen same person again"
-	    			print str(time_difference)
+	    			print "seen same person again (too soon to be leaving)"
 	    		else:
-		    		print "removing person"
+		    		print "seen person leaving"
+		    		self.cumulativeTimeSpent = self.cumulativeTimeSpent + time_difference
+		    		print "cumulative time spent: " + str(self.cumulativeTimeSpent)
 		    		self.peopleInRoom = [p for p in self.peopleInRoom if not self.same(p, (rep, entryTime))]
-		    		print str(len(self.peopleInRoom))
+		    		print str(len(self.peopleInRoom)) + " people are in the room."
 		    		print str(time_difference)
 		    	return
 	    print "seen new person enter"
 	    self.peopleInRoom.append((currentRep, currentTime))
-	    print str(len(self.peopleInRoom))
+	    print str(len(self.peopleInRoom)) + " people are in the room."
 
 	def same(self, (a, b), (c, d)):
 		if (a == c).all():
