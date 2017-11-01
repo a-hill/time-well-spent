@@ -11,6 +11,7 @@ class MainMultiple():
 	    self.faceRecognition = FaceRecognition(self.pathToDLibFacePredictor, self.defaultImageDims, self.pathToTorchNeuralNet)
 	    self.peopleInRoom = []
 	    self.cumulativeTimeSpent = 0
+	    self.timeToWalkIn = 3
 
 	def detect(self, videoInterface):
 	    currentRep = None
@@ -25,7 +26,7 @@ class MainMultiple():
 	    for rep, entryTime in self.peopleInRoom:
 	    	if self.faceRecognition.is_same_person(currentRep, rep):
 	    		time_difference = currentTime - entryTime
-	    		if time_difference < 3: # This is the case where someone is entering and their face is still in the next frame
+	    		if time_difference < timeToWalkIn: # This is the case where someone is entering and their face is still in the next frame
 	    			print "seen same person again (too soon to be leaving)"
 	    		else:
 		    		print "seen person leaving"
@@ -41,6 +42,7 @@ class MainMultiple():
 	    self.peopleInRoom.append((currentRep, currentTime))
 	    print str(len(self.peopleInRoom)) + " people are in the room."
 
+	#For comparing entries in the list
 	def same(self, (a, b), (c, d)):
 		if (a == c).all():
 			if (b == d):
