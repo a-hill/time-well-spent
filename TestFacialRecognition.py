@@ -8,10 +8,9 @@ class TestFacialRecognition(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        self.defaultImageDims = 96
         self.pathToDLibFacePredictor = './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
         self.pathToTorchNeuralNet = './../openface/models/openface/nn4.small2.v1.t7'
-        self.faceRecognition = FaceRecognition(self.pathToDLibFacePredictor, self.defaultImageDims, self.pathToTorchNeuralNet)
+        self.faceRecognition = FaceRecognition(self.pathToDLibFacePredictor, self.pathToTorchNeuralNet)
         self.testImagePath = './test_data/alessio.jpg'
         self.andrewImagePath = './test_data/andrew.jpg'
         self.andrewNoBeardImagePath = './test_data/andrew-no-beard.jpg'
@@ -22,23 +21,23 @@ class TestFacialRecognition(unittest.TestCase):
     def test_can_create_representation_from_frame(self):
         videoInterface = VideoInterface(0)
         frame = videoInterface.get_image_from_file(self.testImagePath)
-        faceRepresentation = self.faceRecognition.get_rep(frame, self.defaultImageDims)
+        faceRepresentation = self.faceRecognition.get_rep(frame)
         self.assertIsInstance(faceRepresentation, np.ndarray, "Representation created was wrong type; should be array")
 
     def test_can_tell_people_apart_photos(self):
         videoInterface = VideoInterface(0)
         frame1 = videoInterface.get_image_from_file(self.testImagePath)
         frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
-        rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)
-        rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
+        rep1 = self.faceRecognition.get_rep(frame1)
+        rep2 = self.faceRecognition.get_rep(frame2)
         self.assertFalse(self.faceRecognition.is_same_person(rep1, rep2))
 
     def test_can_tell_if_same_person_photos(self):
         videoInterface = VideoInterface(0)
         frame1 = videoInterface.get_image_from_file(self.andrewNoBeardImagePath)
         frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
-        rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)
-        rep2 = self.faceRecognition.get_rep(frame2, self.defaultImageDims)
+        rep1 = self.faceRecognition.get_rep(frame1)
+        rep2 = self.faceRecognition.get_rep(frame2)
         self.assertTrue(self.faceRecognition.is_same_person(rep1, rep2))
 
     def test_can_detect_face_from_video(self):
@@ -49,7 +48,7 @@ class TestFacialRecognition(unittest.TestCase):
         while rep is None:
             frame = videoInterface.get_frame()
             if (frame is not None):
-                rep = self.faceRecognition.get_rep(frame, self.defaultImageDims)
+                rep = self.faceRecognition.get_rep(frame)
                 i = i + 1
         self.assertTrue(i == 1) # It should find a face in the first frame
         self.assertIsInstance(rep, np.ndarray)

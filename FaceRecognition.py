@@ -5,15 +5,15 @@ from VideoInterface import VideoInterface
 import random
 
 class FaceRecognition():
+    DEFAULT_IMAGE_DIMENSION = 96
 
-    def __init__(self, facePredictorPath, alignedImageDimensions, networkModelPath):
+    def __init__(self, facePredictorPath, networkModelPath):
         self.facePredictorPath = facePredictorPath
-        self.alignedImgDimensions = alignedImageDimensions
         self.aligner = openface.AlignDlib(facePredictorPath)
-        self.net = openface.TorchNeuralNet(networkModelPath, alignedImageDimensions)
+        self.net = openface.TorchNeuralNet(networkModelPath, self.DEFAULT_IMAGE_DIMENSION)
 
-    def get_rep(self, image, imgDim):
-        alignedFace = self.align_face(image, imgDim)
+    def get_rep(self, image):
+        alignedFace = self.align_face(image)
         if alignedFace is None: # Alignment failed
             return None
         else:
@@ -21,7 +21,7 @@ class FaceRecognition():
             return rep
 
     # private function
-    def align_face(self, image, imgDim):
+    def align_face(self, image):
         # Converts image to format expected by aligner
         rgbImg = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -32,7 +32,7 @@ class FaceRecognition():
             return None
 
         # Crops and rotates according to bb
-        alignedFace = self.aligner.align(imgDim, rgbImg, bb, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+        alignedFace = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, bb, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
 
         if alignedFace is None:  # Alignment failed
             return None
