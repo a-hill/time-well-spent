@@ -16,6 +16,7 @@ class TestFacialRecognition(unittest.TestCase):
         self.andrewNoBeardImagePath = './test_data/andrew-no-beard.jpg'
         self.testVideoPath = "./test_data/Abbie3.mov"
         self.testVideoSidePath = "./test_data/Abbie4.mov"
+        self.testMultiplePeopleVideoPath = ""             # Add path to multiple people
         self.testVideoWithGapPath = "./test_data/abbie_with_gap.mov"
 
     def test_can_create_representation_from_frame(self):
@@ -52,6 +53,10 @@ class TestFacialRecognition(unittest.TestCase):
                 i = i + 1
         self.assertTrue(i == 1) # It should find a face in the first frame
         self.assertIsInstance(rep, np.ndarray)
+
+    def test_can_detect_multiple_faces(self):
+        manyPeople = VideoInterface(self.testMultiplePeopleVideoPath)
+
 
     # This test commented out because doesn't work
     # def test_can_detect_face_from_video_side_angle(self):
