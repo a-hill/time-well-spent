@@ -14,12 +14,14 @@ class MainMultiple():
 
 	def detect(self, videoInterface):
 	    currentRep = None
+	    #Keep searching for a face
 	    while currentRep is None:
 	    	frame = None
 	    	while frame is None:
 	        	frame, currentTime = videoInterface.get_frame_and_time()
 	        currentRep = self.faceRecognition.get_rep(frame, self.defaultImageDims)
 
+	    #Loop through the list and check if currentRep already exists in the list
 	    for rep, entryTime in self.peopleInRoom:
 	    	if self.faceRecognition.is_same_person(currentRep, rep):
 	    		time_difference = currentTime - entryTime
@@ -29,11 +31,13 @@ class MainMultiple():
 		    		print "seen person leaving"
 		    		self.cumulativeTimeSpent = self.cumulativeTimeSpent + time_difference
 		    		print "cumulative time spent: " + str(self.cumulativeTimeSpent)
+		    		#Remove person from list as they have just left the room
 		    		self.peopleInRoom = [p for p in self.peopleInRoom if not self.same(p, (rep, entryTime))]
 		    		print str(len(self.peopleInRoom)) + " people are in the room."
 		    		print str(time_difference)
 		    	return
 	    print "seen new person enter"
+	    #Add new person to list storing it's vector representation and time
 	    self.peopleInRoom.append((currentRep, currentTime))
 	    print str(len(self.peopleInRoom)) + " people are in the room."
 
@@ -53,11 +57,12 @@ class MainMultiple():
 			inputSource = argv[1]
 		except IndexError:
 			print "Please give webcam number or path to video as input on command line"
+			#Quit program if correct input not given
 			quit()
 
 		videoInterface = VideoInterface(inputSource)
 		
-		# Loop forever doing one-in, one-out
+		# Loop forever, tracking entry and exit of multiple people
 		while True:
 		    self.detect(videoInterface)
 
