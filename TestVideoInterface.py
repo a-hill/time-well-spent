@@ -51,12 +51,9 @@ class TestOneInOneOut(unittest.TestCase):
         while frame2 is None:
             frame2, time2 = videoAbbie.get_frame_and_time()
 
-        print(time2 - time1)
-        cv2.imshow('frame1', frame1)
-        cv2.imshow('frame2', frame2)
-        time.sleep(5)
-        cv2.destroyAllWindows()
-        self.assertAlmostEqual(time2-time1, 1, 2, None, None)
+        self.assertIsInstance(frame1, np.ndarray)
+        self.assertIsInstance(frame2, np.ndarray)
+        self.assertAlmostEqual(time2-time1, 1, 1, None, None)
 
 
 
