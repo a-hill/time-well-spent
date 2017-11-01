@@ -14,9 +14,9 @@ class TestFacialRecognition(unittest.TestCase):
         self.testImagePath = './test_data/alessio.jpg'
         self.andrewImagePath = './test_data/andrew.jpg'
         self.andrewNoBeardImagePath = './test_data/andrew-no-beard.jpg'
-        self.testVideoPath = "./test_data/Abbie3.mov"
+        self.testVideoPath = "./test_data/five  _of_us.mov"
         self.testVideoSidePath = "./test_data/Abbie4.mov"
-        self.testMultiplePeopleVideoPath = ""             # Add path to multiple people
+        self.testMultiplePeopleVideoPath = "./test_data/five_of_us.mov"
         self.testVideoWithGapPath = "./test_data/abbie_with_gap.mov"
 
     def test_can_create_representation_from_frame(self):
@@ -56,6 +56,21 @@ class TestFacialRecognition(unittest.TestCase):
 
     def test_can_detect_multiple_faces(self):
         manyPeople = VideoInterface(self.testMultiplePeopleVideoPath)
+
+        frame = manyPeople.get_frame()
+        peopleSeen = 0;
+
+        while frame is not None:
+            reps = self.faceRecognition.get_reps(frame)
+            if len(reps) == 4:
+                break
+            if len(reps) > peopleSeen:
+                peopleSeen = len(reps)
+            frame = manyPeople.get_frame()
+
+        manyPeople.destroy_capture()
+        self.assertTrue(peopleSeen == 4)
+
 
 
     # This test commented out because doesn't work
