@@ -20,13 +20,13 @@ class TestFacialRecognition(unittest.TestCase):
         self.testVideoWithGapPath = "./test_data/abbie_with_gap.mov"
 
     def test_can_create_representation_from_frame(self):
-        videoInterface = VideoInterface()
+        videoInterface = VideoInterface(0)
         frame = videoInterface.get_image_from_file(self.testImagePath)
         faceRepresentation = self.faceRecognition.get_rep(frame, self.defaultImageDims)
         self.assertIsInstance(faceRepresentation, np.ndarray, "Representation created was wrong type; should be array")
 
     def test_can_tell_people_apart_photos(self):
-        videoInterface = VideoInterface()
+        videoInterface = VideoInterface(0)
         frame1 = videoInterface.get_image_from_file(self.testImagePath)
         frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
         rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)
@@ -34,7 +34,7 @@ class TestFacialRecognition(unittest.TestCase):
         self.assertFalse(self.faceRecognition.is_same_person(rep1, rep2))
 
     def test_can_tell_if_same_person_photos(self):
-        videoInterface = VideoInterface()
+        videoInterface = VideoInterface(0)
         frame1 = videoInterface.get_image_from_file(self.andrewNoBeardImagePath)
         frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
         rep1 = self.faceRecognition.get_rep(frame1, self.defaultImageDims)

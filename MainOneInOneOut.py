@@ -37,6 +37,9 @@ class MainOneInOneOut():
 			inputSource = int(argv[1])
 		except ValueError:
 			inputSource = argv[1]
+		except IndexError:
+			print "Please give webcam number or path to video as input on command line"
+			quit()
 
 		videoInterface = VideoInterface(inputSource)
 		
