@@ -1,51 +1,74 @@
-from multiprocessing import Queue
+from multiprocessing.queues import SimpleQueue
 from FaceDetector import FaceDetector
 from FaceRecognition import FaceRecognition
+from VideoInterface import VideoInterface
 import time
+import random
 
 
 class Main():
     def __init__(self):
+        random.seed()
+        self.entryFrameQueue = SimpleQueue()
+        self.exitFrameQueue = SimpleQueue()
+        self.entryRepQueue = SimpleQueue()
+        self.exitRepQueue = SimpleQueue()
 
-        self.entryQueue = Queue()
-        self.exitQueue = Queue()
         self.faceDetectors = []
         self.facesInRoom = []
 
-        cameras = [
+        self.cameras = [
             [0, "entry"],
             [1, "exit"]
         ]
 
-        for camera in cameras:
+        for camera in self.cameras:
+            camera[0] = VideoInterface(camera[0])
+            #camera[0].make_capture()
             if camera[1] == "entry":
                 #Set up an entrance camera
-                self.faceDetectors.append(FaceDetector(camera[0], self.entryQueue))
+                self.faceDetectors.append(FaceDetector(self.entryFrameQueue, self.entryRepQueue))
             else:
                 #Set up an exit camera
-                self.faceDetectors.append(FaceDetector(camera[0], self.exitQueue))
+                self.faceDetectors.append(FaceDetector(self.exitFrameQueue, self.exitRepQueue))
+
+
 
     def run(self):
         while True:
-            # check for people entering
-            if not self.entryQueue.empty():
-                #Get an element from the output queue and check if this person already exists in the list
-                elem = self.entryQueue.get()
+            # get frame from one camera only for load balancing reasons
+            for camera in self.cameras:
+                frame, t = camera[0].get_frame_and_time()
+                if camera[1] == "entry":
+                    self.entryFrameQueue.put([frame, t])
+                else:
+                    self.exitFrameQueue.put([frame, t])
+
+            # compare representations of entering faces
+            while not self.entryRepQueue.empty():
+                print("face found on entry camera")
+                elem = self.entryRepQueue.get()
+                # This is a face coming into the room that needs to be added
                 if not any(FaceRecognition.is_same_person(x[0], elem[0]) for x in self.facesInRoom):
-                    #Adding any new people ie. those that aren't found in the list
+                    print("new face added to room")
+                    # Adding any new people ie. those that aren't found in the list
                     self.facesInRoom.append(elem)
 
-            # check for people exiting
-            if not self.exitQueue.empty():
-                elem = self.exitQueue.get()
+            # compare representations of leaving faces
+            while not self.exitRepQueue.empty():
+                print("face found on exit camera")
+                #This is a face leaving the room that needs to be removed
+                elem = self.exitRepQueue.get()
                 newFacesInRoom = []
                 for face in self.facesInRoom:
                     if FaceRecognition.is_same_person(face[0], elem[0]):
-                        print("This person was in the room for: ", time.time() - face[1], " seconds")
+                        print("This person was in the room for: ", elem[1] - face[1], " seconds")
                     else:
                         newFacesInRoom.append(face)
 
                 self.facesInRoom = newFacesInRoom
+
+            print(str(len(self.facesInRoom)) + " faces currently in the room.")
 
 
 main = Main()

@@ -76,4 +76,5 @@ class FaceRecognition():
             d = rep1 - rep2
             distance = np.dot(d, d)
             return distance < 0.99  # This number comes from openface docs
-        return False
+        else:
+            return False
