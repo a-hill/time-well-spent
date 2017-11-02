@@ -4,7 +4,6 @@ import numpy as np
 from VideoInterface import VideoInterface
 import random
 
-
 class FaceRecognition():
     DEFAULT_IMAGE_DIMENSION = 96
 
@@ -23,13 +22,13 @@ class FaceRecognition():
 
     def get_reps(self, image):
         faces = self.align_faces(image)
-        if len(faces) == 0:  # Alignment failed
-            return None
-        else:
-            reps = []
-            for face in faces:
-                reps.append(self.net.forward(face))
+        reps = []
+        if faces is None:  # No one in frame
             return reps
+
+        for face in faces:
+            reps.append(self.net.forward(face))
+        return reps
 
     # private function
     def align_face(self, image):
@@ -49,6 +48,7 @@ class FaceRecognition():
         return alignedFace
 
     #private function
+    #returns none if no faces found in frame
     def align_faces(self, image):
         # Converts image to format expected by aligner
         rgbImg = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -77,3 +77,5 @@ class FaceRecognition():
             d = rep1 - rep2
             distance = np.dot(d, d)
             return distance < 0.99  # This number comes from openface docs
+
+

@@ -3,6 +3,7 @@ from FaceRecognition import FaceRecognition
 from VideoInterface import VideoInterface
 import numpy as np
 import time
+import cv2
 
 class TestFacialRecognition(unittest.TestCase):
 
@@ -58,18 +59,41 @@ class TestFacialRecognition(unittest.TestCase):
         manyPeople = VideoInterface(self.testMultiplePeopleVideoPath)
 
         frame = manyPeople.get_frame()
-        peopleSeen = 0;
-
+        peopleSeen = 0
+        frame_count = 1
         while frame is not None:
             reps = self.faceRecognition.get_reps(frame)
             if len(reps) == 4:
                 break
             if len(reps) > peopleSeen:
                 peopleSeen = len(reps)
-            frame = manyPeople.get_frame()
+            frame = manyPeople.get_frame()      
+            cv2.imwrite('test_frame'+str(frame_count) + '.png', frame) 
+            frame_count = frame_count + 1
 
-        manyPeople.destroy_capture()
+        #manyPeople.destroy_capture()
+        print(peopleSeen)
+        print(str(frame_count) + "frame count")
         self.assertTrue(peopleSeen == 4)
+
+    def test_can_detect_multiple_faces_webcam(self):
+        manyPeople = VideoInterface(0)
+        startfilming = time.time()
+        frame = manyPeople.get_frame()
+        time.sleep(2)
+        peopleSeen = 0
+        frame_count = 0
+        while frame_count < 10:
+            reps = self.faceRecognition.get_reps(frame)
+            if len(reps) > peopleSeen:
+                peopleSeen = len(reps)
+            frame = manyPeople.get_frame()
+            frame_count = frame_count + 1
+
+        #manyPeople.destroy_capture()
+        endfilming = time.time()
+        print(str(endfilming - startfilming))
+        print(peopleSeen)
 
 
 
