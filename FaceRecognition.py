@@ -23,7 +23,7 @@ class FaceRecognition():
     def get_reps(self, image):
         faces = self.align_faces(image)
         if len(faces) == 0:  # Alignment failed
-            return None
+            return []
         else:
             reps = []
             for face in faces:
