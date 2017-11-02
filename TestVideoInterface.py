@@ -4,6 +4,9 @@ from VideoInterface import VideoInterface
 import numpy as np
 import time
 import cv2
+from teamcity import is_running_under_teamcity
+from teamcity.unittestpy import TeamcityTestRunner
+
 
 class TestOneInOneOut(unittest.TestCase):
     @classmethod
@@ -56,6 +59,9 @@ class TestOneInOneOut(unittest.TestCase):
         self.assertAlmostEqual(time2-time1, 1, 1, None, None)
 
 
-
 if __name__ == '__main__':
-    unittest.main()
+    if is_running_under_teamcity():
+        runner = TeamcityTestRunner()
+    else:
+        runner = unittest.TextTestRunner()
+    unittest.main(testRunner=runner)
