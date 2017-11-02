@@ -2,7 +2,6 @@ import cv2
 import openface
 import numpy as np
 from VideoInterface import VideoInterface
-import random
 
 
 class FaceRecognition():

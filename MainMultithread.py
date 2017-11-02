@@ -6,6 +6,7 @@ import time
 
 class Main():
     def __init__(self):
+
         self.entryQueue = Queue()
         self.exitQueue = Queue()
         self.faceDetectors = []
@@ -36,7 +37,7 @@ class Main():
 
             # check for people exiting
             if not self.exitQueue.empty():
-                elem = self.entryQueue.get()
+                elem = self.exitQueue.get()
                 newFacesInRoom = []
                 for face in self.facesInRoom:
                     if FaceRecognition.is_same_person(face[0], elem[0]):
@@ -45,3 +46,7 @@ class Main():
                         newFacesInRoom.append(face)
 
                 self.facesInRoom = newFacesInRoom
+
+
+main = Main()
+main.run()

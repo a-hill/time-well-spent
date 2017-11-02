@@ -4,6 +4,7 @@ from VideoInterface import VideoInterface
 import numpy as np
 import time
 
+
 class TestFacialRecognition(unittest.TestCase):
 
     @classmethod
@@ -70,6 +71,7 @@ class TestFacialRecognition(unittest.TestCase):
 
         manyPeople.destroy_capture()
         self.assertTrue(peopleSeen == 4)
+
 
 
 

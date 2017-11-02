@@ -5,7 +5,7 @@ import numpy as np
 import time
 import cv2
 
-class TestOneInOneOut(unittest.TestCase):
+class TestVideoInterface(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.defaultImageDims = 96
@@ -54,6 +54,14 @@ class TestOneInOneOut(unittest.TestCase):
         self.assertIsInstance(frame1, np.ndarray)
         self.assertIsInstance(frame2, np.ndarray)
         self.assertAlmostEqual(time2-time1, 1, 1, None, None)
+
+    def test_turn_on_both_cameras(self):
+        entry_cam = VideoInterface(0)
+        exit_cam = VideoInterface(1)
+
+        entry = entry_cam.get_frame()
+        ex = exit_cam.get_frame()
+        self.assertNotEquals(entry, ex)
 
 
 

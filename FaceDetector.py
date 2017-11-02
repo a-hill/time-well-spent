@@ -1,17 +1,16 @@
-from multiprocessing import Process
+from multiprocessing import Process, process
 from VideoInterface import VideoInterface
 from FaceRecognition import FaceRecognition
 
 class FaceDetector:
     def __init__(self, captureNumber, outputQueue):
-        self.camera = VideoInterface(captureNumber)
         self.outputQueue = outputQueue
         self.process = Process(target=self.run)
-        self.process.start()
-
         pathToDLibFacePredictor = './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
         pathToTorchNeuralNet = './../openface/models/openface/nn4.small2.v1.t7'
+        self.camera = VideoInterface(captureNumber)
         self.faceRecognition = FaceRecognition(pathToDLibFacePredictor, pathToTorchNeuralNet)
+        self.process.start()
 
     def run(self):
         while True:
@@ -22,3 +21,5 @@ class FaceDetector:
                 result.append(rep)
                 result.append(t)
                 self.outputQueue.put(result)
+
+
