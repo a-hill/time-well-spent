@@ -56,7 +56,7 @@ class FaceRecognition():
 
         # No face found in frame
         if len(faces) == 0:
-            return None
+            return []
 
         alignedFaces = []
         # Crops and rotates each bounding box in the frame

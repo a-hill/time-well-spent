@@ -18,20 +18,15 @@ class Main():
         self.facesInRoom = []
 
         self.cameras = [
-            [0, "entry"],
-            [1, "exit"]
+            [VideoInterface(0), "entry"],
+            [VideoInterface(1), "exit"]
         ]
 
-        for camera in self.cameras:
-            camera[0] = VideoInterface(camera[0])
-            #camera[0].make_capture()
-            if camera[1] == "entry":
-                #Set up an entrance camera
-                self.faceDetectors.append(FaceDetector(self.entryFrameQueue, self.entryRepQueue))
-            else:
-                #Set up an exit camera
-                self.faceDetectors.append(FaceDetector(self.exitFrameQueue, self.exitRepQueue))
+        # create detectors for entrance camera(s)
+        self.faceDetectors.append(FaceDetector(self.entryFrameQueue, self.entryRepQueue))
 
+        # create detectors for exit camera(s)
+        self.faceDetectors.append(FaceDetector(self.exitFrameQueue, self.exitRepQueue))
 
 
     def run(self):

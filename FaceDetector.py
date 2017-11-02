@@ -18,6 +18,6 @@ class FaceDetector:
                 pair = self.inputQueue.get()
                 frame = pair[0]
                 t = pair[1]
-                rep = self.faceRecognition.get_rep(frame)
-                if rep is not None:
+                reps = self.faceRecognition.get_reps(frame)
+                for rep in reps:
                     self.outputQueue.put([rep, t])
