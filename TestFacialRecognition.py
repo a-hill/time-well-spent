@@ -2,7 +2,7 @@ import unittest
 from FaceRecognition import FaceRecognition
 from VideoInterface import VideoInterface
 import numpy as np
-import time
+import cv2
 
 
 class TestFacialRecognition(unittest.TestCase):
@@ -15,9 +15,9 @@ class TestFacialRecognition(unittest.TestCase):
         self.testImagePath = './test_data/alessio.jpg'
         self.andrewImagePath = './test_data/andrew.jpg'
         self.andrewNoBeardImagePath = './test_data/andrew-no-beard.jpg'
-        self.testVideoPath = "./test_data/five  _of_us.mov"
+        self.testVideoPath = "./test_data/five_of_us.mov"
         self.testVideoSidePath = "./test_data/Abbie4.mov"
-        self.testMultiplePeopleVideoPath = "./test_data/five_of_us.mov"
+        self.testMultiplePeopleVideoPath = "./test_data/tate-1/angle3twofacessametime.mov"
         self.testVideoWithGapPath = "./test_data/abbie_with_gap.mov"
 
     def test_can_create_representation_from_frame(self):
@@ -60,17 +60,28 @@ class TestFacialRecognition(unittest.TestCase):
 
         frame = manyPeople.get_frame()
         peopleSeen = 0;
-
+        frame_list = []
+        if frame is not None:
+            frame_list.append(frame)
+            count = 1
         while frame is not None:
-            reps = self.faceRecognition.get_reps(frame)
-            if len(reps) == 4:
+            frame = manyPeople.get_frame()
+            if frame is not None:
+                frame_list.append(frame)
+                if (count % 10 == 0):
+                    cv2.imwrite('frame' + str(count) + '.png', frame)
+                count = count + 1
+        for x in frame_list:
+            reps = self.faceRecognition.get_reps(x)
+            if len(reps) == 2:
                 break
             if len(reps) > peopleSeen:
                 peopleSeen = len(reps)
-            frame = manyPeople.get_frame()
+        print(count)
 
         manyPeople.destroy_capture()
-        self.assertTrue(peopleSeen == 4)
+        print(peopleSeen)
+        self.assertTrue(peopleSeen == 2)
 
 
 

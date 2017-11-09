@@ -53,6 +53,10 @@ class FaceRecognition():
         rgbImg = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         faces = self.aligner.getAllFaceBoundingBoxes(rgbImg)
+        #remove smallest box from list of faces before alignment
+        # if (len(faces) > 0) or len(faces) == 1:
+        #     smallest = min(faces, key=lambda rect: rect.width() * rect.height())
+
 
         # No face found in frame
         if len(faces) == 0:
