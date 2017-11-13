@@ -19,74 +19,95 @@ class TestFacialRecognition(unittest.TestCase):
         self.testVideoSidePath = "./test_data/Abbie4.mov"
         self.testMultiplePeopleVideoPath = "./test_data/tate-1/angle3twofacessametime.mov"
         self.testVideoWithGapPath = "./test_data/abbie_with_gap.mov"
+    #
+    # def test_can_create_representation_from_frame(self):
+    #     videoInterface = VideoInterface(0)
+    #     frame = videoInterface.get_image_from_file(self.testImagePath)
+    #     faceRepresentation = self.faceRecognition.get_rep(frame)
+    #     self.assertIsInstance(faceRepresentation, np.ndarray, "Representation created was wrong type; should be array")
+    #
+    # def test_can_tell_people_apart_photos(self):
+    #     videoInterface = VideoInterface(0)
+    #     frame1 = videoInterface.get_image_from_file(self.testImagePath)
+    #     frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
+    #     rep1 = self.faceRecognition.get_rep(frame1)
+    #     rep2 = self.faceRecognition.get_rep(frame2)
+    #     self.assertFalse(self.faceRecognition.is_same_person(rep1, rep2))
+    #
+    # def test_can_tell_if_same_person_photos(self):
+    #     videoInterface = VideoInterface(0)
+    #     frame1 = videoInterface.get_image_from_file(self.andrewNoBeardImagePath)
+    #     frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
+    #     rep1 = self.faceRecognition.get_rep(frame1)
+    #     rep2 = self.faceRecognition.get_rep(frame2)
+    #     self.assertTrue(self.faceRecognition.is_same_person(rep1, rep2))
+    #
+    # def test_can_detect_face_from_video(self):
+    #     videoInterface = VideoInterface(self.testVideoPath)
+    #     # loop until it sees a face
+    #     rep = None
+    #     i = 0
+    #     while rep is None:
+    #         frame = videoInterface.get_frame()
+    #         if (frame is not None):
+    #             rep = self.faceRecognition.get_rep(frame)
+    #             i = i + 1
+    #     self.assertTrue(i == 1) # It should find a face in the first frame
+    #     self.assertIsInstance(rep, np.ndarray)
 
-    def test_can_create_representation_from_frame(self):
-        videoInterface = VideoInterface(0)
-        frame = videoInterface.get_image_from_file(self.testImagePath)
-        faceRepresentation = self.faceRecognition.get_rep(frame)
-        self.assertIsInstance(faceRepresentation, np.ndarray, "Representation created was wrong type; should be array")
+    # def test_can_detect_multiple_faces(self):
+    #     manyPeople = VideoInterface("./test_data/tate-1/highangle3facesexit.mov")
+    #
+    #     frame = manyPeople.get_frame()
+    #     peopleSeen = 0;
+    #     frame_list = []
+    #     if frame is not None:
+    #         frame_list.append(frame)
+    #     while frame is not None:
+    #         frame = manyPeople.get_frame()
+    #         if frame is not None:
+    #             frame_list.append(frame)
+    #     for x in frame_list:
+    #         reps = self.faceRecognition.get_reps(x)
+    #         if len(reps) == 2:
+    #             break
+    #         if len(reps) > peopleSeen:
+    #             peopleSeen = len(reps)
+    #
+    #     manyPeople.destroy_capture()
+    #     print('people seen: ', peopleSeen)
+    #     self.assertTrue(peopleSeen == 3)
 
-    def test_can_tell_people_apart_photos(self):
-        videoInterface = VideoInterface(0)
-        frame1 = videoInterface.get_image_from_file(self.testImagePath)
-        frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
-        rep1 = self.faceRecognition.get_rep(frame1)
-        rep2 = self.faceRecognition.get_rep(frame2)
-        self.assertFalse(self.faceRecognition.is_same_person(rep1, rep2))
+    def test_multiple_cameras(self):
+        cameraA = VideoInterface("./test_data/tate-1/exitshotA.mov")
+        cameraB = VideoInterface("./test_data/tate-1/exitshotB.mov")
 
-    def test_can_tell_if_same_person_photos(self):
-        videoInterface = VideoInterface(0)
-        frame1 = videoInterface.get_image_from_file(self.andrewNoBeardImagePath)
-        frame2 = videoInterface.get_image_from_file(self.andrewImagePath)
-        rep1 = self.faceRecognition.get_rep(frame1)
-        rep2 = self.faceRecognition.get_rep(frame2)
-        self.assertTrue(self.faceRecognition.is_same_person(rep1, rep2))
-
-    def test_can_detect_face_from_video(self):
-        videoInterface = VideoInterface(self.testVideoPath)
-        # loop until it sees a face
-        rep = None
-        i = 0
-        while rep is None:
-            frame = videoInterface.get_frame()
-            if (frame is not None):
-                rep = self.faceRecognition.get_rep(frame)
-                i = i + 1
-        self.assertTrue(i == 1) # It should find a face in the first frame
-        self.assertIsInstance(rep, np.ndarray)
-
-    def test_can_detect_multiple_faces(self):
-        manyPeople = VideoInterface(self.testMultiplePeopleVideoPath)
-
-        frame = manyPeople.get_frame()
+        frame = cameraA.get_frame()
         peopleSeen = 0;
         frame_list = []
+        cameraChoice = True
+
         if frame is not None:
             frame_list.append(frame)
-            count = 1
+
         while frame is not None:
-            frame = manyPeople.get_frame()
+            camera = cameraA if cameraChoice else cameraB
+            cameraChoice = not cameraChoice
+            frame = camera.get_frame()
             if frame is not None:
                 frame_list.append(frame)
-                if (count % 10 == 0):
-                    cv2.imwrite('frame' + str(count) + '.png', frame)
-                count = count + 1
+
         for x in frame_list:
             reps = self.faceRecognition.get_reps(x)
-            if len(reps) == 2:
-                break
-            if len(reps) > peopleSeen:
-                peopleSeen = len(reps)
-        print(count)
 
-        manyPeople.destroy_capture()
-        print(peopleSeen)
-        self.assertTrue(peopleSeen == 2)
+        cameraA.destroy_capture()
+        cameraB.destroy_capture()
+        print('people seen: ', peopleSeen)
+        self.assertTrue(peopleSeen == 3)
 
 
 
-
-    # This test commented out because doesn't work
+            # This test commented out because doesn't work
     # def test_can_detect_face_from_video_side_angle(self):
     #     videoInterface = VideoInterface(self.testVideoSidePath)
     #     # loop until it sees a face

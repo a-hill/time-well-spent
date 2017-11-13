@@ -2,6 +2,7 @@ import cv2
 import openface
 import numpy as np
 from VideoInterface import VideoInterface
+import time
 
 
 class FaceRecognition():
@@ -53,10 +54,6 @@ class FaceRecognition():
         rgbImg = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         faces = self.aligner.getAllFaceBoundingBoxes(rgbImg)
-        #remove smallest box from list of faces before alignment
-        # if (len(faces) > 0) or len(faces) == 1:
-        #     smallest = min(faces, key=lambda rect: rect.width() * rect.height())
-
 
         # No face found in frame
         if len(faces) == 0:
@@ -65,10 +62,17 @@ class FaceRecognition():
         alignedFaces = []
         # Crops and rotates each bounding box in the frame
         for face in faces:
-            aligned = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, face,
-                                         landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
-            if aligned is not None:
-                alignedFaces.append(aligned)
+            print 'Bounding box size: ', face.width() * face.height(),
+            if face.width() * face.height() > 3500:
+                print ': accepted'
+                aligned = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, face,
+                                             landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+                if aligned is not None:
+                    alignedFaces.append(aligned)
+
+                cv2.imwrite(str(time.time()) + 'frame.jpg', aligned)
+            else:
+                print ': discarded'
 
         return alignedFaces
 
