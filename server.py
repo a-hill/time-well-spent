@@ -2,11 +2,17 @@ from flask import Flask
 import re
 app = Flask(__name__)
 
+facePredictorPath = './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
+networkModelPath = './../openface/models/openface/nn4.small2.v1.t7'
+        
+
+faceRecognition = FaceRecognition(facePredictorPath, networkModelPath)
+
 def valid_filename(filename):
 	pattern = re.compile('[0-9]+\.jpe?g')
 	return re.search(pattern, filename) is not None
 	
-def get_image(request):
+def process_image(request):
 	#check that user submitted a file
 	if 'file' not in request.files:
 		print 'client did not submit a file. ignoring.'
@@ -22,7 +28,11 @@ def get_image(request):
 		
 	#read file from stream
 	image = file.stream.read()
-	return image
+	
+	#get rep
+	rep = faceRecognition.get_rep_from_aligned(image)
+	
+	return rep
 		
 
 @app.route("/submit_face/entry/", methods=['POST'])
@@ -30,11 +40,11 @@ def face_enter():
 	successResponse = 'success'
 	failResponse = 'fail'
 	
-	image = get_image(request)
-	if image is None:
+	rep = process_image(request)
+	if rep is None:
 		return failResponse
 	else:
-		pass #TODO
+		print 'success:', rep
 				
 	return successResponse
 	
@@ -43,11 +53,6 @@ def face_exit():
 	successResponse = 'success'
 	failResponse = 'fail'
 	
-	image = get_image(request)
-	if image is None:
-		return failResponse
-	else:
-		pass #TODO
 				
 	return successResponse	
 	

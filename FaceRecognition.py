@@ -13,6 +13,9 @@ class FaceRecognition():
         self.aligner = openface.AlignDlib(facePredictorPath)
         self.net = openface.TorchNeuralNet(networkModelPath, self.DEFAULT_IMAGE_DIMENSION)
 
+    def get_rep_from_aligned(self, image):
+    	return self.net.forward(image)
+
     def get_rep(self, image):
         alignedFace = self.align_face(image)
         if alignedFace is None:  # Alignment failed
