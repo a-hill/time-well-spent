@@ -1,5 +1,10 @@
-from flask import Flask
+from flask import Flask, request
+import cv2
 import re
+import numpy as np
+from PIL import Image
+
+from FaceRecognition import FaceRecognition
 app = Flask(__name__)
 
 facePredictorPath = './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
@@ -14,23 +19,25 @@ def valid_filename(filename):
 	
 def process_image(request):
 	#check that user submitted a file
-	if 'file' not in request.files:
+	if 'fileToUpload' not in request.files:
 		print 'client did not submit a file. ignoring.'
 		return None
 	
 	#get file
-	file = request.files['file']
+	file = request.files['fileToUpload'] # may also be request.files['file']
 	
 	#check validity of filename
 	if not valid_filename(file.filename):
 		print 'client submitted a file with an invalid filename'
 		return None
 		
-	#read file from stream
+	#read file from stream into array
 	image = file.stream.read()
-	
+	string = np.fromstring(image, dtype='uint8')
+	data = cv2.imdecode(string, cv2.IMREAD_COLOR)
+
 	#get rep
-	rep = faceRecognition.get_rep_from_aligned(image)
+	rep = faceRecognition.get_rep_from_aligned(data)
 	
 	return rep
 		
@@ -56,7 +63,7 @@ def face_exit():
 				
 	return successResponse	
 	
-@app.rout("/cumulative_time/", methods=['GET'])
+@app.route("/cumulative_time/", methods=['GET'])
 def get_time():
 	#TODO
 	return 0
