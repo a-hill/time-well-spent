@@ -9,6 +9,7 @@ class FaceRecognition():
     DEFAULT_IMAGE_DIMENSION = 96
 
     def __init__(self, facePredictorPath, networkModelPath):
+        self.MINIMUM_SIZE_FOR_FACE = 3500
         self.facePredictorPath = facePredictorPath
         self.aligner = openface.AlignDlib(facePredictorPath)
         self.net = openface.TorchNeuralNet(networkModelPath, self.DEFAULT_IMAGE_DIMENSION)
@@ -62,12 +63,11 @@ class FaceRecognition():
         alignedFaces = []
         # Crops and rotates each bounding box in the frame
         for face in faces:
-            if face.width() * face.height() > 3500:
+            if face.width() * face.height() > self.MINIMUM_SIZE_FOR_FACE:
                 aligned = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, face,
                                              landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
                 if aligned is not None:
                     alignedFaces.append(aligned)
-            else:
 
         return alignedFaces
 
