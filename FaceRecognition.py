@@ -13,9 +13,6 @@ class FaceRecognition():
         self.aligner = openface.AlignDlib(facePredictorPath)
         self.net = openface.TorchNeuralNet(networkModelPath, self.DEFAULT_IMAGE_DIMENSION)
 
-    def get_rep_from_aligned(self, image):
-    	return self.net.forward(image)
-
     def get_rep(self, image):
         alignedFace = self.align_face(image)
         if alignedFace is None:  # Alignment failed
@@ -65,17 +62,12 @@ class FaceRecognition():
         alignedFaces = []
         # Crops and rotates each bounding box in the frame
         for face in faces:
-            print 'Bounding box size: ', face.width() * face.height(),
             if face.width() * face.height() > 3500:
-                print ': accepted'
                 aligned = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, face,
                                              landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
                 if aligned is not None:
                     alignedFaces.append(aligned)
-
-                cv2.imwrite(str(time.time()) + 'frame.jpg', aligned)
             else:
-                print ': discarded'
 
         return alignedFaces
 
