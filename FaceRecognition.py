@@ -2,26 +2,40 @@ import cv2
 import openface
 import numpy as np
 from VideoInterface import VideoInterface
-import random
+import time
+
 
 class FaceRecognition():
+    DEFAULT_IMAGE_DIMENSION = 96
 
-    def __init__(self, facePredictorPath, alignedImageDimensions, networkModelPath):
+    def __init__(self, facePredictorPath, networkModelPath):
         self.facePredictorPath = facePredictorPath
-        self.alignedImgDimensions = alignedImageDimensions
         self.aligner = openface.AlignDlib(facePredictorPath)
-        self.net = openface.TorchNeuralNet(networkModelPath, alignedImageDimensions)
+        self.net = openface.TorchNeuralNet(networkModelPath, self.DEFAULT_IMAGE_DIMENSION)
 
-    def get_rep(self, image, imgDim):
-        alignedFace = self.align_face(image, imgDim)
-        if alignedFace is None: # Alignment failed
+    def get_rep_from_aligned(self, image):
+    	return self.net.forward(image)
+
+    def get_rep(self, image):
+        alignedFace = self.align_face(image)
+        if alignedFace is None:  # Alignment failed
             return None
         else:
             rep = self.net.forward(alignedFace)
             return rep
 
+    def get_reps(self, image):
+        faces = self.align_faces(image)
+        if len(faces) == 0:  # Alignment failed
+            return []
+        else:
+            reps = []
+            for face in faces:
+                reps.append(self.net.forward(face))
+            return reps
+
     # private function
-    def align_face(self, image, imgDim):
+    def align_face(self, image):
         # Converts image to format expected by aligner
         rgbImg = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -32,14 +46,46 @@ class FaceRecognition():
             return None
 
         # Crops and rotates according to bb
-        alignedFace = self.aligner.align(imgDim, rgbImg, bb, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+        alignedFace = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, bb,
+                                         landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
 
-        if alignedFace is None:  # Alignment failed
-            return None
         return alignedFace
 
-    def is_same_person(self, rep1, rep2):
+    #private function
+    def align_faces(self, image):
+        # Converts image to format expected by aligner
+        rgbImg = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        faces = self.aligner.getAllFaceBoundingBoxes(rgbImg)
+
+        # No face found in frame
+        if len(faces) == 0:
+            return []
+
+        alignedFaces = []
+        # Crops and rotates each bounding box in the frame
+        for face in faces:
+            print 'Bounding box size: ', face.width() * face.height(),
+            if face.width() * face.height() > 3500:
+                print ': accepted'
+                aligned = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, face,
+                                             landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+                if aligned is not None:
+                    alignedFaces.append(aligned)
+
+                cv2.imwrite(str(time.time()) + 'frame.jpg', aligned)
+            else:
+                print ': discarded'
+
+        return alignedFaces
+
+    @staticmethod
+    def is_same_person(rep1, rep2):
         if rep2 is not None and rep1 is not None: # Check they both exist
+            if len(rep1) != len(rep2): # Check they're same length
+                return False
             d = rep1 - rep2
             distance = np.dot(d, d)
-            return distance < 0.99 # This number comes from openface docs
+            return distance < 0.99  # This number comes from openface docs
+        else:
+            return False
