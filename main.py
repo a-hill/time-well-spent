@@ -9,17 +9,22 @@ class Main:
     def __init__(self, door_id, videoInterface, url):
         self.url = url
         self.door_id = door_id
-        self.MAX_FRAMERATE = 0.2  # five frames per second
+        #self.MAX_FRAMERATE = 0.2  # five frames per second
+        self.MAX_FRAMERATE = 5  # 5 seconds per frame
         self.videoInterface = videoInterface
         self.process = Process(target=self.run)
 
     def run(self):
         while True:
+            print 'Loop Print 1: Start'
+
             # start rate limiting
-            start = time.clock()
+            start = time.time()
 
             # take frame and get time
             frame, t = self.videoInterface.get_frame_and_time()
+
+            print 'Loop Print 2: Taken Frame'
 
             # todo: if frame is none????
             if frame is not None:
@@ -29,8 +34,9 @@ class Main:
             else:
                 print 'frame is none'
 
+            time.sleep(10000000000)
             # rate limiting
-            delta = (time.clock() - start) * 1000
+            delta = (time.time() - start)
             if delta < self.MAX_FRAMERATE:
                 time.sleep(self.MAX_FRAMERATE - delta)
 
@@ -39,8 +45,11 @@ class Main:
 # Main door = 0
 if __name__ == '__main__':
 
-    entry_url = 'modern-times-1.uksouth.cloudapp.azure.com/submit_face/entry/'
-    exit_url = 'modern-times-1.uksouth.cloudapp.azure.com/submit_face/exit/'
+    #entry_url = 'modern-times-1.uksouth.cloudapp.azure.com/submit_face/entry/'
+    #exit_url = 'modern-times-1.uksouth.cloudapp.azure.com/submit_face/exit/'
+
+    entry_url = 'http://localhost:5000/submit_face/entry/'
+    exit_url = 'http://localhost:5000/submit_face/exit/'
 
     door_id = int(sys.argv[1])
     camera_id = int(sys.argv[2])

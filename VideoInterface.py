@@ -16,6 +16,7 @@ class VideoInterface():
     def get_frame(self):
         if self.capture == None:
             self.make_capture()
+            self.capture.set(cv2.CAP_PROP_CONVERT_RGB, True)
 
         ret, frame = self.capture.read()
 
