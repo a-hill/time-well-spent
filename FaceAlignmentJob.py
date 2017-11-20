@@ -31,19 +31,23 @@ class FaceAlignmentJob:
         #         _, img_encoded = cv2.imencode('.jpg', f)
         #         response = requests.post(url, img_encoded)
         #         print json.loads(response.text)
-
         faces = self.align_faces()
+        print 'after aligning faces, faces length: ' + str(len(faces))
         for face in faces:
+            cv2.imwrite('face.jpg', face)
             files = { 'upload_file' : face }
+            print 'Request: about to send'
             response = requests.post(self.url, files=files, data=form)
             print response.text
 
     def align_faces(self):
         # Converts image to format expected by aligner
-        rgbImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
-
+        print 'in align_faces (start)'
+        #rgbImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+        rgbImg = self.frame
+        print 'rgbImg made'
         faces = self.aligner.getAllFaceBoundingBoxes(rgbImg)
-
+        print 'got bounded boxes' + str(len(faces))
         alignedFaces = []
         # Crops and rotates each bounding box in the frame
         for face in faces:
