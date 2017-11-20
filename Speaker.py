@@ -1,20 +1,39 @@
-from flask import Flask
-import inflect
+from threading import Thread
 import pyttsx
+import inflect
+from flask import Flask
+from Queue import PriorityQueue
 
-app = Flask(__name__)   #Understand what this is?? :/
+queue = PriorityQueue(10)
+app = Flask(__name__)
 
 @app.route('/speaker_time/', methods=['POST'])
 def get_total_time():
-    total_time_pp = request.form['total_time_pp']
-    exit_time = request.form['exit_time']
+    total_time_pp = Flask.request.form['total_time_pp']
+    exit_time = Flask.request.form['exit_time']
 
     if total_time_pp is None or exit_time is None:
         print('form not properly submitted to speaker server')
         return 'fail'
     else:
-        play_sound(int(total_time_pp), int(exit_time))
+        time_string = get_time_string(int(total_time_pp))
+        queue.put((exit_time, time_string))
         return 'success'
+
+
+class Speaker(Thread):
+    def run(self):
+        global queue
+        while True:
+            sound_to_play = queue.get()
+            self.speak(sound_to_play)
+            queue.task_done()
+
+    def speak(self, s):
+        sound = pyttsx.init()
+        sound.say(s)
+        sound.runAndWait()
+
 
 def get_time_string(total_num_seconds):
     hours = int(total_num_seconds / 3600)
@@ -46,17 +65,6 @@ def get_time_string(total_num_seconds):
         seconds_speech = speak.number_to_words(seconds) + " second" + s
     return hours_speech + mins_speech + seconds_speech
 
-def add_to_queue(total_time_pp, exit_time):
-    
-
-def play_sound(total_time_pp, exit_time):
-    speech = get_time_string(total_time_pp)
-    print speech
-    #sound = pyttsx.init()
-    #sound.say(speech)
-    #sound.runAndWait()
-
 if __name__ == "__main__":
-    play_sound(0, 50)
-#    app.run(threaded=True, host='0.0.0.0')
-
+    app.run(threaded=True, host='0.0.0.0')
+    Speaker().start()
