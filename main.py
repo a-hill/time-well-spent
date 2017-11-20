@@ -16,15 +16,11 @@ class Main:
 
     def run(self):
         while True:
-            print 'Loop Print 1: Start'
-
             # start rate limiting
             start = time.time()
 
             # take frame and get time
             frame, t = self.videoInterface.get_frame_and_time()
-
-            print 'Loop Print 2: Taken Frame'
 
             # todo: if frame is none????
             if frame is not None:
