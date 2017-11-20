@@ -10,7 +10,7 @@ class Main:
         self.url = url
         self.door_id = door_id
         #self.MAX_FRAMERATE = 0.2  # five frames per second
-        self.MAX_FRAMERATE = 5  # 5 seconds per frame
+        self.MAX_FRAMERATE = 3  # 5 seconds per frame
         self.videoInterface = videoInterface
         self.process = Process(target=self.run)
 
@@ -34,7 +34,6 @@ class Main:
             else:
                 print 'frame is none'
 
-            time.sleep(10000000000)
             # rate limiting
             delta = (time.time() - start)
             if delta < self.MAX_FRAMERATE:
@@ -45,21 +44,16 @@ class Main:
 # Main door = 0
 if __name__ == '__main__':
 
-    #entry_url = 'modern-times-1.uksouth.cloudapp.azure.com/submit_face/entry/'
-    #exit_url = 'modern-times-1.uksouth.cloudapp.azure.com/submit_face/exit/'
+    entry_url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000/submit_face/entry/'
+    exit_url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000/submit_face/exit/'
 
-    entry_url = 'http://localhost:5000/submit_face/entry/'
-    exit_url = 'http://localhost:5000/submit_face/exit/'
+    #entry_url = 'http://localhost:5000/submit_face/entry/'
+    #exit_url = 'http://localhost:5000/submit_face/exit/'
 
     door_id = int(sys.argv[1])
     camera_id = int(sys.argv[2])
 
-    if sys.argv[3] is 'exit':
-        is_exit = True
-    else:
-        is_exit = False
-
-    url = exit_url if is_exit else entry_url
+    url = exit_url if sys.argv[3] == 'exit' else entry_url
     # One exit cam and one entry cam per computer
     main = Main(door_id, VideoInterface(camera_id), url)
 

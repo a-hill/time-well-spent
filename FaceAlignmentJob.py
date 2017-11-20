@@ -1,28 +1,29 @@
 import StringIO
 from multiprocessing import Process
-import openface
 import requests
+import openface
 import cv2
 from PIL import Image
 
 class FaceAlignmentJob:
+    OUTER_EYES_AND_NOSE = [36, 45, 33]
     BB_SIZE_THRESHOLD = 3500
     FACE_PREDICTOR = './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
     DEFAULT_IMAGE_DIMENSION = 96
 
     def __init__(self, frame, time, door, url):
-        self.frame     = frame
-        self.time      = time
-        self.door      = door
-        self.aligner   = openface.AlignDlib(self.FACE_PREDICTOR)
-        self.url = url
+        self.frame   = frame
+        self.time    = time
+        self.door    = door
+        self.aligner = openface.AlignDlib(self.FACE_PREDICTOR)
+        self.url     = url
         self.process = Process(target=self.run)
 
 
     def run(self):
         form = {
-            'time'      : str(int(self.time)),
-            'door'      : self.door,
+            'time' : str(int(self.time)),
+            'door' : self.door,
         }
 
         #ria version
@@ -49,8 +50,8 @@ class FaceAlignmentJob:
     def align_faces(self):
         # Converts image to format expected by aligner
         print 'in align_faces (start)'
-        #rgbImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
-        rgbImg = self.frame
+        rgbImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+        #rgbImg = self.frame
         print 'rgbImg made'
         faces = self.aligner.getAllFaceBoundingBoxes(rgbImg)
         print 'got bounded boxes' + str(len(faces))
@@ -59,7 +60,7 @@ class FaceAlignmentJob:
         for face in faces:
             if face.width() * face.height() > self.BB_SIZE_THRESHOLD:
                 aligned = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION, rgbImg, face,
-                                             landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+                                             landmarkIndices=self.OUTER_EYES_AND_NOSE)
                 if aligned is not None:
                     alignedFaces.append(aligned)
 
