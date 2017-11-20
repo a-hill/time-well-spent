@@ -1,7 +1,9 @@
+import StringIO
 from multiprocessing import Process
 import openface
 import requests
 import cv2
+from PIL import Image
 
 class FaceAlignmentJob:
     BB_SIZE_THRESHOLD = 3500
@@ -19,7 +21,7 @@ class FaceAlignmentJob:
 
     def run(self):
         form = {
-            'time'      : str(self.time),
+            'time'      : str(int(self.time)),
             'door'      : self.door,
         }
 
@@ -28,14 +30,18 @@ class FaceAlignmentJob:
         # for f in faces:
         #         # Check correct format of image, encoding as jpg regardless
         #         # todo: If response is empty or error or timeout etc?
-        #         _, img_encoded = cv2.imencode('.jpg', f)
+        #         _, img_encoded = cv2.imencode('.jpg',  )
         #         response = requests.post(url, img_encoded)
         #         print json.loads(response.text)
         faces = self.align_faces()
         print 'after aligning faces, faces length: ' + str(len(faces))
         for face in faces:
             cv2.imwrite('face.jpg', face)
-            files = { 'upload_file' : face }
+            im = Image.fromarray(face)
+            buf = StringIO.StringIO()
+            im.save(buf, "JPEG", quality=10)
+            jpegface = buf.getvalue()
+            files = { 'upload_file' : jpegface }
             print 'Request: about to send'
             response = requests.post(self.url, files=files, data=form)
             print response.text
