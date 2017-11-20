@@ -4,9 +4,17 @@ import pyttsx
 
 app = Flask(__name__)   #Understand what this is?? :/
 
-@app.route('/speaker_time/<int:total_time_pp>/<int:exit_time>')
-def get_total_time(total_time_pp, exit_time):
-    return play_sound(total_time_pp, exit_time)
+@app.route('/speaker_time/', methods=['POST'])
+def get_total_time():
+    total_time_pp = request.form['total_time_pp']
+    exit_time = request.form['exit_time']
+
+    if total_time_pp is None or exit_time is None:
+        print('form not properly submitted to speaker server')
+        return 'fail'
+    else:
+        play_sound(int(total_time_pp), int(exit_time))
+        return 'success'
 
 def play_sound(total_time_pp, exit_time):
     hours = int(total_time_pp / 3600)
