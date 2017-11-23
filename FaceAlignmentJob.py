@@ -9,18 +9,28 @@ from PIL import Image
 class FaceAlignmentJob:
     OUTER_EYES_AND_NOSE = [36, 45, 33]
     BB_SIZE_THRESHOLD = 3500
-    FACE_PREDICTOR = './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
-    DEFAULT_IMAGE_DIMENSION = 96
 
-    def __init__(self, frame, t, door, url):
+    DEFAULT_IMAGE_DIMENSION = 96
+    OVERLAP_THRESHOLD = 0.8
+
+    def __init__(self, frame, t, door, url, aligner):
         self.frame   = frame
         self.t       = t
         self.door    = door
-        self.aligner = openface.AlignDlib(self.FACE_PREDICTOR)
+        self.aligner = aligner
         self.url     = url
-        self.process = Process(target=self.run)
 
-    def run(self):
+    def is_similar(self, a, b):
+        overlapArea = float(a.intersect(b).area())
+        factor = overlapArea / float(a.area()) 
+        print 'overlap factor: ' + str(factor)
+        return factor >= self.OVERLAP_THRESHOLD
+
+    def can_discard_face(self, face, facesLastFrame):
+        print type(face)
+        return any(self.is_similar(face, oldFace) for oldFace in facesLastFrame)
+
+    def run(self, facesLastFrame):
         start = time.clock()
 
         form = {
@@ -28,27 +38,22 @@ class FaceAlignmentJob:
             'door' : self.door,
         }
 
-        #ria version
-        # if faces, for each face, send to server
-        # for f in faces:
-        #         # Check correct format of image, encoding as jpg regardless
-        #         # todo: If response is empty or error or timeout etc?
-        #         _, img_encoded = cv2.imencode('.jpg',  )
-        #         response = requests.post(url, img_encoded)
-        #         print json.loads(response.text)
         faces = self.align_faces()
         print 'after aligning faces, faces length: ' + str(len(faces))
         for face in faces:
-            im = Image.fromarray(face)
-            buf = StringIO.StringIO()
-            im.save(buf, "JPEG", quality=10)
-            jpegface = buf.getvalue()
-            files = { 'upload_file' : jpegface }
-            print 'Request: about to send'
-            response = requests.post(self.url, files=files, data=form)
-            print response.text
+            if self.can_discard_face(face, facesLastFrame):
+                print 'discarded a face'
+            else:
+                im = Image.fromarray(face)
+                buf = StringIO.StringIO()
+                im.save(buf, "JPEG", quality=10)
+                jpegface = buf.getvalue()
+                files = { 'upload_file' : jpegface }
+                print 'Request: about to send'
+                requests.post(self.url, files=files, data=form)
         
         print 'This face took: ' + str(time.clock() - start) + ' seconds to align.'
+        return faces
 
     def align_faces(self):
         # Converts image to format expected by aligner
@@ -56,7 +61,7 @@ class FaceAlignmentJob:
         #rgbImg = self.frame
 
         faces = self.aligner.getAllFaceBoundingBoxes(rgbImg)
-        print 'got ' + str(len(faces)) + ' bounded boexs'
+        print 'got ' + str(len(faces)) + ' bounded boxes'
         alignedFaces = []
         # Crops and rotates each bounding box in the frame
         for face in faces:

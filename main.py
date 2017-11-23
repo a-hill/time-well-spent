@@ -2,36 +2,30 @@ from VideoInterface import VideoInterface
 import sys
 import time
 from FaceAlignmentJob import FaceAlignmentJob
-
+import openface
 
 class Main:
+    FACE_PREDICTOR = './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
+
     def __init__(self, door_id, videoInterface, url):
         self.url = url
         self.door_id = door_id
-        self.MAX_FRAMERATE = 0.5  # 2 frames per second
         self.videoInterface = videoInterface
+        self.aligner = openface.AlignDlib(self.FACE_PREDICTOR)
 
     def run(self):
-        while True:
-            # start rate limiting
-            start = time.clock()
+	facesLastFrame = []
 
+        while True:
             # take frame and get time
             frame, t = self.videoInterface.get_frame_and_time()
 
-            # todo: if frame is none????
             if frame is not None:
                 # Send frame to another process for alignment
-                job = FaceAlignmentJob(frame, t, door_id, url)
-                job.process.start()
+                job = FaceAlignmentJob(frame, t, self.door_id, self.url, self.aligner)
+                facesLastFrame = job.run(facesLastFrame)
             else:
                 print 'frame is none'
-
-            # rate limiting
-            delta = time.clock() - start
-            if delta < self.MAX_FRAMERATE:
-                time.sleep(self.MAX_FRAMERATE - delta)
-
 
 # Arguments - main.py doorNum cameraNum exit/entry
 # Main door = 0
