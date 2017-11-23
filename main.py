@@ -1,4 +1,3 @@
-from multiprocessing import Process
 from VideoInterface import VideoInterface
 import sys
 import time
@@ -9,15 +8,13 @@ class Main:
     def __init__(self, door_id, videoInterface, url):
         self.url = url
         self.door_id = door_id
-        #self.MAX_FRAMERATE = 0.2  # five frames per second
-        self.MAX_FRAMERATE = 3  # 5 seconds per frame
+        self.MAX_FRAMERATE = 0.5  # 2 frames per second
         self.videoInterface = videoInterface
-        self.process = Process(target=self.run)
 
     def run(self):
         while True:
             # start rate limiting
-            start = time.time()
+            start = time.clock()
 
             # take frame and get time
             frame, t = self.videoInterface.get_frame_and_time()
@@ -31,7 +28,7 @@ class Main:
                 print 'frame is none'
 
             # rate limiting
-            delta = (time.time() - start)
+            delta = time.clock() - start
             if delta < self.MAX_FRAMERATE:
                 time.sleep(self.MAX_FRAMERATE - delta)
 

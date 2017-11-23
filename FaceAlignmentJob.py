@@ -3,6 +3,7 @@ from multiprocessing import Process
 import requests
 import openface
 import cv2
+import time
 from PIL import Image
 
 class FaceAlignmentJob:
@@ -11,18 +12,19 @@ class FaceAlignmentJob:
     FACE_PREDICTOR = './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
     DEFAULT_IMAGE_DIMENSION = 96
 
-    def __init__(self, frame, time, door, url):
+    def __init__(self, frame, t, door, url):
         self.frame   = frame
-        self.time    = time
+        self.t       = t
         self.door    = door
         self.aligner = openface.AlignDlib(self.FACE_PREDICTOR)
         self.url     = url
         self.process = Process(target=self.run)
 
-
     def run(self):
+        start = time.clock()
+
         form = {
-            'time' : str(int(self.time)),
+            'time' : str(int(self.t)),
             'door' : self.door,
         }
 
@@ -37,7 +39,6 @@ class FaceAlignmentJob:
         faces = self.align_faces()
         print 'after aligning faces, faces length: ' + str(len(faces))
         for face in faces:
-            cv2.imwrite('face.jpg', face)
             im = Image.fromarray(face)
             buf = StringIO.StringIO()
             im.save(buf, "JPEG", quality=10)
@@ -46,15 +47,16 @@ class FaceAlignmentJob:
             print 'Request: about to send'
             response = requests.post(self.url, files=files, data=form)
             print response.text
+        
+        print 'This face took: ' + str(time.clock() - start) + ' seconds to align.'
 
     def align_faces(self):
         # Converts image to format expected by aligner
-        print 'in align_faces (start)'
         rgbImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
         #rgbImg = self.frame
-        print 'rgbImg made'
+
         faces = self.aligner.getAllFaceBoundingBoxes(rgbImg)
-        print 'got bounded boxes' + str(len(faces))
+        print 'got ' + str(len(faces)) + ' bounded boexs'
         alignedFaces = []
         # Crops and rotates each bounding box in the frame
         for face in faces:
