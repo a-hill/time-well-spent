@@ -14,8 +14,6 @@ class Main:
         self.aligner = openface.AlignDlib(self.FACE_PREDICTOR)
 
     def run(self):
-	facesLastFrame = []
-
         while True:
             # take frame and get time
             frame, t = self.videoInterface.get_frame_and_time()
@@ -23,7 +21,7 @@ class Main:
             if frame is not None:
                 # Send frame to another process for alignment
                 job = FaceAlignmentJob(frame, t, self.door_id, self.url, self.aligner)
-                facesLastFrame = job.run(facesLastFrame)
+                job.run()
             else:
                 print 'frame is none'
 

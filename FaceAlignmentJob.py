@@ -26,11 +26,12 @@ class FaceAlignmentJob:
         print 'overlap factor: ' + str(factor)
         return factor >= self.OVERLAP_THRESHOLD
 
-    def can_discard_face(self, face, facesLastFrame):
-        print type(face)
-        return any(self.is_similar(face, oldFace) for oldFace in facesLastFrame)
+    def can_discard_face(self, face):
+        return False
+        #print type(face)
+        #return any(self.is_similar(face, oldFace) for oldFace in facesLastFrame)
 
-    def run(self, facesLastFrame):
+    def run(self):
         start = time.clock()
 
         form = {
@@ -41,7 +42,7 @@ class FaceAlignmentJob:
         faces = self.align_faces()
         print 'after aligning faces, faces length: ' + str(len(faces))
         for face in faces:
-            if self.can_discard_face(face, facesLastFrame):
+            if self.can_discard_face(face):
                 print 'discarded a face'
             else:
                 im = Image.fromarray(face)
@@ -53,7 +54,6 @@ class FaceAlignmentJob:
                 requests.post(self.url, files=files, data=form)
         
         print 'This face took: ' + str(time.clock() - start) + ' seconds to align.'
-        return faces
 
     def align_faces(self):
         # Converts image to format expected by aligner
