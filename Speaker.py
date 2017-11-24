@@ -3,15 +3,15 @@ import pyttsx
 import inflect
 from flask import Flask
 from Queue import PriorityQueue
+from flask import request
 
 queue = PriorityQueue(10)
 app = Flask(__name__)
 
 @app.route('/speaker_time/', methods=['POST'])
 def get_total_time():
-    total_time_pp = Flask.request.form['total_time_pp']
-    exit_time = Flask.request.form['exit_time']
-
+    total_time_pp = request.form['total_time_pp']
+    exit_time = request.form['exit_time']
     if total_time_pp is None or exit_time is None:
         print('form not properly submitted to speaker server')
         return 'fail'
@@ -20,20 +20,11 @@ def get_total_time():
         queue.put((exit_time, time_string))
         return 'success'
 
-
-class Speaker(Thread):
-    def run(self):
-        global queue
-        while True:
-            sound_to_play = queue.get()
-            self.speak(sound_to_play)
-            queue.task_done()
-
-    def speak(self, s):
-        sound = pyttsx.init()
-        sound.say(s)
-        sound.runAndWait()
-
+def speak(s):
+    # sound = pyttsx.init()
+    # sound.say(s)
+    # sound.runAndWait()
+    print(s)
 
 def get_time_string(total_num_seconds):
     hours = int(total_num_seconds / 3600)
@@ -65,6 +56,29 @@ def get_time_string(total_num_seconds):
         seconds_speech = speak.number_to_words(seconds) + " second" + s
     return hours_speech + mins_speech + seconds_speech
 
-if __name__ == "__main__":
-    app.run(threaded=True, host='0.0.0.0')
-    Speaker().start()
+
+class FlaskThread(Thread):
+    def __init__(self):
+        ''' Constructor. '''
+        Thread.__init__(self)
+
+    def run(self):
+        app.run(threaded=True, port=5000, host='0.0.0.0')
+
+class SpeakerThread(Thread):
+    def __init__(self):
+        ''' Constructor. '''
+        Thread.__init__(self)
+
+    def run(self):
+        while True:
+            sound_to_play = queue.get()
+            speak(sound_to_play)
+            queue.task_done()
+
+
+thread1 = FlaskThread()
+thread2 = SpeakerThread()
+
+thread1.start()
+thread2.start()
