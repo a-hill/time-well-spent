@@ -12,8 +12,6 @@ class VideoInterface():
         self.setup_camera()
 
     def setup_camera(self):
-        self.set_variable('exposure_auto', 1)
-        self.set_variable('exposure_absolute', 250)
         self.set_variable('focus_auto', 0)
         self.set_variable('focus_absolute', 0)
 
