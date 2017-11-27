@@ -1,5 +1,5 @@
 #!/bin/bash
 
-i=$(ifconfig | awk -F':' '/inet addr/&&!/127.0.0.1/{split($2,_," ");print _[1]}')
+i=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 h=$(hostname)
 curl --request GET "https://www.doc.ic.ac.uk/~ah4515/moderntimes/ip_save.php?hostname=$h&ip=$i"
