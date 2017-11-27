@@ -1,22 +1,34 @@
 import cv2
 import time
+import subprocess
 
 class VideoInterface():
-
-    def __init__(self, capturePath):
-        self.capturePath = capturePath
+    def __init__(self, captureNo):
+        self.captureNo = captureNo
         self.capture = None
 
     def make_capture(self):
-        self.capture = cv2.VideoCapture(self.capturePath)
+        self.capture = cv2.VideoCapture(self.captureNo)
+        self.setup_camera()
+
+    def setup_camera(self):
+        self.set_variable('exposure_auto', 1)
+        self.set_variable('exposure_absolute', 250)
+        self.set_variable('focus_auto', 0)
+        self.set_variable('focus_absolute', 0)
+
+    def set_variable(self, variable, value):
+        subprocess.check_call(
+            "v4l2-ctl -d /dev/video" + str(self.captureNo) +
+            ' -c ' + variable + "=" + str(value), shell=True
+        )
 
     def get_image_from_file(self, path):
         return cv2.imread(path)
 
     def get_frame(self):
-        if self.capture == None:
+        if self.capture is None:
             self.make_capture()
-            #self.capture.set(cv2.CV_CAP_PROP_CONVERT_RGB, True)
 
         ret, frame = self.capture.read()
 
