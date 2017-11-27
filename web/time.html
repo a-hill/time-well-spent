@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Time</title>
+
+    <!-- Bootstrap: Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Google font https://fonts.google.com/ -->
+    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+
+    <style type="text/css">
+        /* CSS Specific to this page */
+        body {
+            background-color: black
+        }
+        #time {
+            padding-top: 150px;
+            color: white;
+            font-family: 'Lobster', cursive;
+            font-size: 300px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="time" class="block-center text-center">
+    9999:99:99
+</div>
+
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+
+<script type="application/javascript">
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function main () {
+        while (true) {
+            get();
+            var d = new Date();
+            console.log(d.getDate() + ' - ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + ': Updating');
+            await sleep(5000);
+        }
+    }
+    function get() {
+        //$.get("http://modern-times-1.uksouth.cloudapp.azure.com:5000/cumulative_time/", function( data ) {
+        $.get("https://www.doc.ic.ac.uk/~ah4515/moderntimes/test_get_time.php", function( data ) {
+            if(!isNaN(data)) {
+                updateTime(data);
+            } else {
+                console.log('NaN:' + data)
+            }
+        });
+    }
+
+    function updateTime(time) {
+        $("#time").html( time );
+    }
+
+    $( document ).ready(function() {
+        main();
+    });
+
+</script>
+
+</body>
+</html>
