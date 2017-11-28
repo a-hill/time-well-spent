@@ -14,6 +14,8 @@ class VideoInterface():
     def setup_camera(self):
         self.set_variable('focus_auto', 0)
         self.set_variable('focus_absolute', 0)
+        self.set_variable('exposure_auto', 1)
+        self.set_variable('exposure_absolute', 250)
 
     def set_variable(self, variable, value):
         subprocess.check_call(
