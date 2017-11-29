@@ -3,6 +3,8 @@ import requests
 import cv2
 import time
 from PIL import Image
+import sys
+from termcolor import colored
 
 class FaceAlignmentJob:
     OUTER_EYES_AND_NOSE = [36, 45, 33]
@@ -33,8 +35,12 @@ class FaceAlignmentJob:
             im.save(buf, "JPEG", quality=10)
             jpegface = buf.getvalue()
             files = { 'upload_file' : jpegface }
-            requests.post(self.url, files=files, data=form)
-        
+            
+            try:
+                requests.post(self.url, files=files, data=form)
+            except requests.exceptions.ConnectionError:
+                print colored('client on door: ' + str(self.door) + ' failed to connect to server, not sending aligned face', 'blue')     
+
         print 'This face took: ' + str(time.clock() - start) + ' seconds to align.'
 
     def align_faces(self):

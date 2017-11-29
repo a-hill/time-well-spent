@@ -29,8 +29,8 @@ class Main:
 # Main door = 0
 if __name__ == '__main__':
 
-    entry_url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5555/submit_face/entry/'
-    exit_url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5555/submit_face/exit/'
+    entry_url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000/submit_face/entry/'
+    exit_url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000/submit_face/exit/'
 
     #entry_url = 'http://localhost:5000/submit_face/entry/'
     #exit_url = 'http://localhost:5000/submit_face/exit/'

@@ -1,12 +1,41 @@
 import time
 import requests
 import sys
-from espeak import espeak
+from multiprocessing import Process
 import os
+import json
+from Queue import PriorityQueue
 
+MAX_TIME_PASSED = 1 # in seconds
 poll_rate = 0.4  # in seconds
 url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5555'
 door = int(sys.argv[1])
+speed = "175"  # Speed in wpm. Default is 175, min is 80, theoretical max is 500
+pitch = "50"  # Pitch between 0 and 99, default is 50
+variant = "m1"  # can be m1-6 or f1-6 or whisper or croak
+priorityQueue = PriorityQueue()
+
+
+def __init__():
+    process = Process(target=run)
+    process.start()
+
+
+def run():
+    while True:
+        r = requests.get(url + '/next_exit_time/' + str(door) + '/')
+        body = json.loads(r.text)
+
+        if not body['sound'] is 'false':
+            try:
+                seconds = int(body['room-time'])
+                exit_time = int(body['exit-time'])
+                priorityQueue.put((exit_time, seconds))
+            except ValueError:
+                print("no sound to play")
+
+        time.sleep(poll_rate)
+
 
 def play_sound(total_time_pp):
     hours = int(total_time_pp / 3600)
@@ -18,19 +47,12 @@ def play_sound(total_time_pp):
     seconds_speech = str(seconds) + " seconds "
 
     speech = hours_speech + mins_speech + seconds_speech
-    os.system("espeak '" + speech + "'")
+    os.system("espeak '" + speech + "' -s " + speed + " -p " + pitch + " -ven-sc+" + variant)
 
-for i in range(10):
-    play_sound(i * 10)
 
-#while True:
-#    r = requests.get(url + '/next_exit_time/' + str(door) + '/')
+while True:
+    pair = priorityQueue.get()
+    if pair[0] - time.time() <= MAX_TIME_PASSED:
+        play_sound(pair[1])
+    priorityQueue.task_done()
 
-#    try:
-#        seconds = int(r.text)
-#        play_sound(seconds)
-#    except ValueError:
-#        print("no sound to play")
-
-#    print 'speaker client request text: ' + r.text
-#    time.sleep(poll_rate)
