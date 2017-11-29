@@ -59,6 +59,8 @@ def play_sound(total_time_pp):
 
     os.system("espeak '" + speech + "' -s " + speed + " -p " + pitch + " -ven-sc+" + variant)
 
+def should_say(last_message,  this_message, last_message_said_at):
+    return abs(last_message - this_message) > 2 or time.time() - last_message_said_at > 2.0
 
 #while True:
 #    if not priorityQueue.empty():
@@ -69,6 +71,9 @@ def play_sound(total_time_pp):
 #
 #        priorityQueue.task_done()
 
+
+last_message_said = 0
+last_message_said_at = time.time()
 
 while True:
     print 'polling the server...'    
@@ -81,6 +86,12 @@ while True:
     else:
         print 'received something from the server: ' + r.text
         if r.text != 'no sound to play':
-            play_sound(int(r.text))
+            time_spent = int(r.text)
+            if should_say(last_message_said, time_spent, last_message_said_at):
+                play_sound(time_spent)
+                last_message = time_spent
+                last_message_said_at = time.time()
+            else:
+                print 'not saying time ' + r.text + ' because it was too similar to a previous one'
 
     time.sleep(poll_rate)
