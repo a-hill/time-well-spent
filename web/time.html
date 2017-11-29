@@ -12,7 +12,7 @@
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <!-- Google font https://fonts.google.com/ -->
-    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
 
     <style type="text/css">
         /* CSS Specific to this page */
@@ -22,7 +22,7 @@
         #time {
             padding-top: 150px;
             color: white;
-            font-family: 'Lobster', cursive;
+            font-family: 'Inconsolata', monospace;
             font-size: 300px;
         }
     </style>
@@ -62,7 +62,7 @@
         //$.get("http://modern-times-1.uksouth.cloudapp.azure.com:5000/cumulative_time/", function( data ) {
         $.get("https://www.doc.ic.ac.uk/~ah4515/moderntimes/test_get_time.php", function( data ) {
             if(!isNaN(data)) {
-                updateTime(data);
+                updateTime(data)
             } else {
                 console.log('NaN:' + data)
             }
@@ -70,7 +70,11 @@
     }
 
     function updateTime(time) {
-        $("#time").html( time );
+        var hours = Math.floor(time / 3600);
+        time = time - hours * 3600;
+        minutes = Math.floor(time / 60);
+        seconds = Math.floor(time - minutes * 60);
+        $("#time").html( hours.toString() + ":" + minutes.toString() + ":" + seconds.toString() );
     }
 
     $( document ).ready(function() {
