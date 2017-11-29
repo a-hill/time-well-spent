@@ -62,6 +62,7 @@
         //$.get("http://modern-times-1.uksouth.cloudapp.azure.com:5000/cumulative_time/", function( data ) {
         $.get("https://www.doc.ic.ac.uk/~ah4515/moderntimes/test_get_time.php", function( data ) {
             if(!isNaN(data)) {
+		hours = data 
                 updateTime(data);
             } else {
                 console.log('NaN:' + data)
