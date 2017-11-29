@@ -8,7 +8,7 @@ from termcolor import colored
 
 class FaceAlignmentJob:
     OUTER_EYES_AND_NOSE = [36, 45, 33]
-    BB_SIZE_THRESHOLD = 3500
+    BB_SIZE_THRESHOLD = 4000
 
     DEFAULT_IMAGE_DIMENSION = 96
 
