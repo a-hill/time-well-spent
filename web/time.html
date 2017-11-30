@@ -59,8 +59,8 @@
         }
     }
     function get() {
-        //$.get("http://modern-times-1.uksouth.cloudapp.azure.com:5000/cumulative_time/", function( data ) {
-        $.get("https://www.doc.ic.ac.uk/~ah4515/moderntimes/test_get_time.php", function( data ) {
+        $.get("http://modern-times-1.uksouth.cloudapp.azure.com:5000/cumulative_time/", function( data ) {
+        //$.get("https://www.doc.ic.ac.uk/~ah4515/moderntimes/test_get_time.php", function( data ) {
             if(!isNaN(data)) {
                 updateTime(data)
             } else {
@@ -71,9 +71,18 @@
 
     function updateTime(time) {
         var hours = Math.floor(time / 3600);
+
         time = time - hours * 3600;
         minutes = Math.floor(time / 60);
+	if (minutes <= 9){
+	   minutes = minutes.toString();
+	   minutes = "0" + minutes;
+	}
         seconds = Math.floor(time - minutes * 60);
+	if (seconds <= 9){
+	   seconds = seconds.toString();
+	   seconds = "0" + seconds;
+	}
         $("#time").html( hours.toString() + ":" + minutes.toString() + ":" + seconds.toString() );
     }
 
