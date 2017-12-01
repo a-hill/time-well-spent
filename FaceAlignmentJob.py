@@ -41,7 +41,7 @@ class FaceAlignmentJob:
 
             try:
                 requests.post(self.url, files=files, data=form, timeout=self.TIMEOUT)
-            except requests.exceptions.ConnectionError:
+            except:
                 print colored('client on door: ' + str(self.door) + ' failed to connect to server, not sending aligned face', 'blue')     
             cv2.imwrite('./faces/' + form['time'] + str(i) + '.jpg', face)
 
