@@ -21,8 +21,11 @@ def say_phrase(string):
     tts.save(filename)
     time.sleep(0.1)
     
-    os.system('cvlc ' + filename + ' --play-and-exit')
-    os.remove(filename)
+    try:    
+        os.system('cvlc ' + filename + ' --play-and-exit')
+        os.remove(filename)
+    except:
+        print 'WARNING OS ERROR IN SPEAKER'
 
 def play_sound(total_time_pp):
     hours = int(total_time_pp / 3600)
@@ -40,7 +43,7 @@ def play_sound(total_time_pp):
     #os.system("espeak '" + speech + "' -s " + speed + " -p " + pitch + " -ven-sc+" + variant)
 
 def should_say(last_message,  this_message, last_message_said_at):
-    return abs(last_message - this_message) > 2 or time.time() - last_message_said_at > 2.0
+    return True
 
 last_message_said = 0
 last_message_said_at = time.time()

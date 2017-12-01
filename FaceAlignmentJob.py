@@ -11,7 +11,7 @@ class FaceAlignmentJob:
     BB_SIZE_THRESHOLD = 4000
 
     DEFAULT_IMAGE_DIMENSION = 96
-    TIMEOUT = 1 # in seconds
+    TIMEOUT = 1.0 # in seconds
 
     def __init__(self, frame, t, door, url, aligner):
         self.frame   = frame
@@ -41,7 +41,7 @@ class FaceAlignmentJob:
 
             try:
                 requests.post(self.url, files=files, data=form, timeout=self.TIMEOUT)
-            except requests.exceptions.ConnectionError:
+            except:
                 print colored('client on door: ' + str(self.door) + ' failed to connect to server, not sending aligned face', 'blue')     
             cv2.imwrite('./faces/' + form['time'] + str(i) + '.jpg', face)
 
