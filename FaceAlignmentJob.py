@@ -28,8 +28,16 @@ class FaceAlignmentJob:
             'door' : self.door,
         }
 
+        direction = 'entry' if 'entry' in self.url else 'exit'
+
         faces = self.align_faces()
-        print 'after aligning faces, faces length: ' + str(len(faces))
+        #print 'after aligning faces, faces length: ' + str(len(faces))
+
+        if len(faces) > 0:
+            print colored(direction + ': ' + str(len(faces)), 'green')
+        else:
+            print 'frame taken (no frames)'
+
         i = 0
         for face in faces:
             i = i + 1
@@ -42,14 +50,14 @@ class FaceAlignmentJob:
             try:
                 requests.post(self.url, files=files, data=form, timeout=self.TIMEOUT)
             except:
-                print colored('client on door: ' + str(self.door) + ' failed to connect to server, not sending aligned face', 'blue')     
+                print colored('client on door: ' + str(self.door) + ' failed to connect to server, not sending aligned face', 'red')
 
-            direction = 'entry' if 'entry' in self.url else 'exit'
+            #direction = 'entry' if 'entry' in self.url else 'exit'
             filename = './faces/' + form['time'] + '-' + direction + '-' + str(i) + '.jpg'
 
             cv2.imwrite(filename, face)
 
-        print 'This face took: ' + str(time.clock() - start) + ' seconds to align.'
+        #print 'This face took: ' + str(time.clock() - start) + ' seconds to align.'
 
     def align_faces(self):
         # Converts image to format expected by aligner
