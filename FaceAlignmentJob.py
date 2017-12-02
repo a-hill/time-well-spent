@@ -34,9 +34,9 @@ class FaceAlignmentJob:
         #print 'after aligning faces, faces length: ' + str(len(faces))
 
         if len(faces) > 0:
-            print colored(direction + ': ' + str(len(faces)), 'green')
+            print colored('frame on ' + direction + ': ' + str(len(faces)), 'green')
         else:
-            print 'frame taken (no frames)'
+            print 'frame empty ' + direction
 
         i = 0
         for face in faces:
