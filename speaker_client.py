@@ -8,7 +8,7 @@ from Queue import PriorityQueue
 from termcolor import colored
 from gtts import gTTS
 
-poll_rate = 0.4  # in seconds
+poll_rate = 0.2  # in seconds
 url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000'
 door = int(sys.argv[1])
 speed = "175"  # Speed in wpm. Default is 175, min is 80, theoretical max is 500
@@ -44,22 +44,26 @@ def play_sound(total_time_pp):
 
 def should_say(last_message,  this_message, last_message_said_at):
     return True
+<<<<<<< HEAD
+=======
+    #return abs(last_message - this_message) > 2 or time.time() - last_message_said_at > 2.0
+>>>>>>> 75207ad6c314bed5572e40596340e45cc7aea336
 
 last_message_said = 0
 last_message_said_at = time.time()
 
 while True:
-    print 'polling the server...'    
 
     r = ''
     try:
         r = requests.get(url + '/next_exit_time/' + str(door) + '/')
     except requests.exceptions.ConnectionError:
-        print colored('speaker on door: ' + str(door) + ' failed to connect to server', 'yellow')
+        print colored('speaker on door: ' + str(door) + ' failed to connect to server', 'red')
     else:
         print 'received something from the server: ' + r.text
         if r.text != 'no sound to play':
             time_spent = int(r.text)
+	    print colored(time_spent, 'green')
             if should_say(last_message_said, time_spent, last_message_said_at):
                 play_sound(time_spent)
                 last_message = time_spent
