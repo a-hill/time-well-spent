@@ -62,7 +62,7 @@ while True:
             time_spent = int(r.text)
             if should_say(last_message_said, time_spent):
                 play_sound(time_spent)
-                last_message = time_spent
+                last_message_said = time_spent
             else:
                 print colored('Not saying time', 'yellow')
         else:
