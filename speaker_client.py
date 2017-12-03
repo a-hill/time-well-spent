@@ -22,10 +22,10 @@ def say_phrase(string):
     time.sleep(0.1)
     
     try:    
-        os.system('cvlc ' + filename + ' --play-and-exit')
+        os.system('cvlc ' + filename + ' --play-and-exit 2&> /dev/null')
         os.remove(filename)
     except:
-        print 'WARNING OS ERROR IN SPEAKER'
+        print colored('WARNING OS ERROR IN SPEAKER', 'red')
 
 def play_sound(total_time_pp):
     hours = int(total_time_pp / 3600)
@@ -37,7 +37,7 @@ def play_sound(total_time_pp):
     seconds_speech = str(seconds) + " seconds "
 
     speech = hours_speech + mins_speech + seconds_speech
-    print 'about to say: \'' + speech + '\''
+    print colored('about to say: \'' + speech + '\'', 'green')
 
     say_phrase(speech)
     #os.system("espeak '" + speech + "' -s " + speed + " -p " + pitch + " -ven-sc+" + variant)
@@ -48,6 +48,8 @@ def should_say(last_message,  this_message, last_message_said_at):
 last_message_said = 0
 last_message_said_at = time.time()
 
+print_freq = 20
+count = 0
 while True:
 
     r = ''
@@ -56,15 +58,17 @@ while True:
     except requests.exceptions.ConnectionError:
         print colored('speaker on door: ' + str(door) + ' failed to connect to server', 'red')
     else:
-        print 'received something from the server: ' + r.text
         if r.text != 'no sound to play':
             time_spent = int(r.text)
-	    print colored(time_spent, 'green')
             if should_say(last_message_said, time_spent, last_message_said_at):
                 play_sound(time_spent)
                 last_message = time_spent
                 last_message_said_at = time.time()
             else:
                 print 'not saying time ' + r.text + ' because it was too similar to a previous one'
-
+        else:
+            if count % print_freq == 0:
+                print count, ': no sound to play'
+            count += 1
+                
     time.sleep(poll_rate)
