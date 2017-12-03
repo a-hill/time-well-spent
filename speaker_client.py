@@ -40,13 +40,11 @@ def play_sound(total_time_pp):
     print 'about to say: \'' + speech + '\''
 
     say_phrase(speech)
-    #os.system("espeak '" + speech + "' -s " + speed + " -p " + pitch + " -ven-sc+" + variant)
 
-def should_say(last_message,  this_message, last_message_said_at):
-    return True
-    #return abs(last_message - this_message) > 2 or time.time() - last_message_said_at > 2.0
+def should_say(last_message,  this_message):
+    return abs(last_message - this_message) > 5
+
 last_message_said = 0
-last_message_said_at = time.time()
 
 while True:
 
@@ -60,10 +58,9 @@ while True:
         if r.text != 'no sound to play':
             time_spent = int(r.text)
 	    print colored(time_spent, 'green')
-            if should_say(last_message_said, time_spent, last_message_said_at):
+            if should_say(last_message_said, time_spent):
                 play_sound(time_spent)
                 last_message = time_spent
-                last_message_said_at = time.time()
             else:
                 print 'not saying time ' + r.text + ' because it was too similar to a previous one'
 
