@@ -22,7 +22,7 @@ def say_phrase(string):
     time.sleep(0.1)
     
     try:    
-        os.system('cvlc ' + filename + ' --play-and-exit 2&> /dev/null')
+        os.system('cvlc ' + filename + ' --play-and-exit >/dev/null 2>/dev/null')
         os.remove(filename)
     except:
         print colored('WARNING OS ERROR IN SPEAKER', 'red')
