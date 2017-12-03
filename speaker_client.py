@@ -42,7 +42,9 @@ def play_sound(total_time_pp):
     say_phrase(speech)
 
 def should_say(last_message,  this_message):
-    return abs(last_message - this_message) > 5
+    temp = abs(last_message - this_message)
+    print temp
+    return temp > 5
 
 last_message_said = 0
 
