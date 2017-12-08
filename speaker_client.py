@@ -8,7 +8,7 @@ from Queue import PriorityQueue
 from termcolor import colored
 from gtts import gTTS
 
-poll_rate = 0.2  # in seconds
+poll_rate = 0.1  # in seconds
 url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000'
 door = int(sys.argv[1])
 speed = "175"  # Speed in wpm. Default is 175, min is 80, theoretical max is 500
@@ -41,10 +41,10 @@ def play_sound(total_time_pp):
 
     say_phrase(speech)
 
-def should_say(last_message,  this_message):
-    return abs(last_message - this_message) > 5
+def should_say(last_message):
+    return abs(last_message - time.time()) > 5
 
-last_message_said = 0
+time_of_last_message_said = 0
 
 print_freq = 20
 count = 0
@@ -58,9 +58,9 @@ while True:
     else:
         if r.text != 'no sound to play':
             time_spent = int(r.text)
-            if should_say(last_message_said, time_spent):
+            if should_say(time_of_last_message_said):
+                time_of_last_message_said = time.time()
                 play_sound(time_spent)
-                last_message = time_spent
             else:
                 print colored('Not saying time', 'yellow')
         else:
