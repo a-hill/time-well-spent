@@ -8,7 +8,7 @@ from Queue import PriorityQueue
 from termcolor import colored
 from gtts import gTTS
 
-poll_rate = 0.2  # in seconds
+poll_rate = 0.1  # in seconds
 url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000'
 door = int(sys.argv[1])
 speed = "175"  # Speed in wpm. Default is 175, min is 80, theoretical max is 500
@@ -42,9 +42,8 @@ def play_sound(total_time_pp):
     say_phrase(speech)
 
 def should_say(last_message,  this_message):
-    temp = abs(last_message - this_message)
-    print temp
-    return temp > 5
+    return abs(last_message - this_message)
+	
 
 last_message_said = 0
 
