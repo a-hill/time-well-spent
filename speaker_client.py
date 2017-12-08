@@ -41,11 +41,10 @@ def play_sound(total_time_pp):
 
     say_phrase(speech)
 
-def should_say(last_message,  this_message):
-    return abs(last_message - this_message)
-	
+def should_say(last_message):
+    return abs(last_message - time.time()) > 5
 
-last_message_said = 0
+time_of_last_message_said = 0
 
 print_freq = 20
 count = 0
@@ -59,9 +58,9 @@ while True:
     else:
         if r.text != 'no sound to play':
             time_spent = int(r.text)
-            if should_say(last_message_said, time_spent):
+            if should_say(time_of_last_message_said):
+                time_of_last_message_said = time.time()
                 play_sound(time_spent)
-                last_message_said = time_spent
             else:
                 print colored('Not saying time', 'yellow')
         else:
