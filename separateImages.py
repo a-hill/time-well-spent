@@ -5,10 +5,9 @@ import numpy as np
 
 def separate(door_dir):
     #Go through each image in door_dir
-    i = 0
+    i = 1
     for fname in os.listdir(door_dir):
-        if fname != ".DS_Store":
-            print fname
+        if fname != ".DS_Store" and fname != "1512216490-entry-1.jpg":
             print "onto new person"
             #Create new directory for each image
             newDirName = "Person" + str(i)
@@ -39,8 +38,7 @@ def faceMatch(repEn, repEx):
 
     d = repEn - repEx
     dot = np.dot(d, d)
-
-    return dot < 1.8
+    return dot < 0.99
 
 
 def findMatch(searchDir, personDir, origFName):
@@ -50,12 +48,12 @@ def findMatch(searchDir, personDir, origFName):
         if "exit" in fname:
             #Get the time and compare against entry
             splitFName = fname.split("-")
-            exitTime = splitFName[0]
+            exitTime = int(splitFName[0])
             splitOrigName = origFName.split("-")
-            entryTime = splitOrigName[0]
+            entryTime = int(splitOrigName[0])
             if exitTime > entryTime:
                 rgbEntry = cv2.imread("/Users/riajha/modern-times-server/door1/" + origFName, 1)
-                bgrExit =  cv2.imread("/Users/riajha/modern-times-server/" + searchDir + "/"+fname, 1)
+                bgrExit =  cv2.imread(searchDir + "/"+fname, 1)
                 imEntry = cv2.cvtColor(rgbEntry, cv2.COLOR_RGB2BGR)
                 repEn = getRep(imEntry)
                 repEx = getRep(bgrExit)
@@ -63,6 +61,8 @@ def findMatch(searchDir, personDir, origFName):
                     #save origFname in personDir
                     print "match found, saving"
                     cv2.imwrite("/Users/riajha/modern-times-server/separated_door1/" + personDir + "/"+ origFName, rgbEntry)
+                    imExit = cv2.cvtColor(bgrExit, cv2.COLOR_BGR2RGB)
+                    cv2.imwrite("/Users/riajha/modern-times-server/separated_door1/" + personDir + "/"+ fname,imExit)
 
 
 
@@ -76,7 +76,6 @@ dirA = "/Users/riajha/modern-times-server/facesA"
 dirB = "/Users/riajha/modern-times-server/facesB"
 dirC = "/Users/riajha/modern-times-server/facesC"
 dirD = "/Users/riajha/modern-times-server/facesD"
-
 
 
 separate(dirName)
