@@ -1,5 +1,6 @@
 import urllib, json
 import requests
+import os
 
 def get_data(entry_filename, exit_filename):
     with open(entry_filename, 'rb') as f:
@@ -28,9 +29,14 @@ def get_data(entry_filename, exit_filename):
     emotion = data['faceAttributes']['emotion']
 
     #get filename data
+    entry_filename_split = entry_filename.split('/')
+    exit_filename_split = exit_filename.split('/')
+    entry_filename = entry_filename_split[len(entry_filename_split)-1]
+    exit_filename = exit_filename_split[len(exit_filename_split)-1]
     entry_p = entry_filename.split('.')[0].split('-')
     exit_p = exit_filename.split('.')[0].split('-')
-
+    print exit_p
+    print entry_p
     result = {
         'age' : data['faceAttributes']['age'],
         'gender' : data['faceAttributes']['gender'],
@@ -53,7 +59,10 @@ def data_to_csv(data):
 
     return ', '.join(l) + '\n'
 
-def get_filenames():
+def get_dirs(baseDir):
+    people = os.listdir(baseDir)
+    return people
+
     # TODO:
     # this is the only thing you guys need to do
     # returns a list of pairs of filenames. 
@@ -63,13 +72,22 @@ def get_filenames():
 
 def build_data(output_filename):
     f = open(output_filename, 'w')
-
-    filenames = get_filenames()
-    for filename_pair in filenames:
-        data = get_data(filename_pair[0], filename_pair[1])
-        csv = data_to_csv(data)
-        f.write(csv)
+    people = os.listdir(baseDir)
+    for person in people:
+        if person != ".DS_Store":
+            first = 0
+            second = 1
+            filename_pair = os.listdir(baseDir + person)
+            while filename_pair[first] == ".DS_Store":
+                first = first + 1
+            while filename_pair[second] == ".DS_Store" or first == second:
+                second = second + 1
+            data = get_data(baseDir+person+"/"+filename_pair[first], baseDir+person+"/"+filename_pair[second])
+            csv = data_to_csv(data)
+            f.write(csv)
 
     f.close()
 
+
+baseDir = "/Users/riajha/modern-times/analysis/people/"
 build_data('results.csv')
