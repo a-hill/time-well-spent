@@ -7,10 +7,17 @@ class VideoInterface():
     def __init__(self, captureNo):
         self.captureNo = captureNo
         self.capture = None
+        # Set filePath for reading from video file
+        # If reading from video, setup_camera() must not be called
+        if isinstance(captureNo, str):
+            self.readingFromVideoFile = True
+        else:
+            self.readingFromVideoFile = False
 
     def make_capture(self):
         self.capture = cv2.VideoCapture(self.captureNo)
-        self.setup_camera()
+        if not self.readingFromVideoFile:
+            self.setup_camera()
 
     def setup_camera(self):
         self.set_variable('focus_auto', 0)

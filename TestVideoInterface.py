@@ -3,24 +3,21 @@ import unittest
 from VideoInterface import VideoInterface
 import numpy as np
 import time
-import cv2
-from teamcity import is_running_under_teamcity
-from teamcity.unittestpy import TeamcityTestRunner
 
 
 class TestVideoInterface(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.defaultImageDims = 96
-        self.testImagePath = './test_data/alessio.jpg'
-        self.testVideoPath = "./test_data/Abbie3.mov"
-
+        self.testImagePath = "../modern-times-test-resources/not-tate/" + \
+                             "alessio.jpg"
+        self.testVideoPath = "../modern-times-test-resources/not-tate/" + \
+                             "Abbie3.mov"
 
     def test_can_read_image_from_file(self):
         image = VideoInterface(self.testImagePath)
         testImage = image.get_image_from_file(self.testImagePath)
         self.assertIsInstance(testImage, np.ndarray)
-
 
     # This test commented out because uses webcam not video so not replicable
     # def test_can_read_frame_from_webcam(self):
@@ -28,13 +25,11 @@ class TestVideoInterface(unittest.TestCase):
     #     frame = videoInterface.get_frame()
     #     self.assertIsInstance(frame, np.ndarray)
 
-
     def test_can_read_frame_from_video(self):
         videoAbbie = VideoInterface(self.testVideoPath)
         frame = videoAbbie.get_frame()
         self.assertIsInstance(frame, np.ndarray)
         videoAbbie.destroy_capture()
-
 
     def test_can_get_different_frames_from_video(self):
         videoAbbie = VideoInterface(self.testVideoPath)
@@ -43,11 +38,9 @@ class TestVideoInterface(unittest.TestCase):
         self.assertFalse((frame1 == frame2).all())
         videoAbbie.destroy_capture()
 
-
     def test_cannot_destroy_capture_for_images(self):
         videoAbbie = VideoInterface(self.testVideoPath)
         self.assertFalse(videoAbbie.destroy_capture())
-
 
     def test_can_get_frames_1_second_apart(self):
         videoAbbie = VideoInterface(self.testVideoPath)
@@ -63,7 +56,6 @@ class TestVideoInterface(unittest.TestCase):
         self.assertIsInstance(frame1, np.ndarray)
         self.assertIsInstance(frame2, np.ndarray)
         self.assertAlmostEqual(time2-time1, 1, 1, None, None)
-
 
     # This test commented out because uses webcam not video so not replicable
     # def test_turn_on_both_cameras(self):
@@ -81,8 +73,5 @@ class TestVideoInterface(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    if is_running_under_teamcity():
-        runner = TeamcityTestRunner()
-    else:
-        runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner()
     unittest.main(testRunner=runner)
