@@ -1,11 +1,12 @@
 from VideoInterface import VideoInterface
 import sys
-import time
 from FaceAlignmentJob import FaceAlignmentJob
 import openface
 
+
 class Main:
-    FACE_PREDICTOR = './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
+    FACE_PREDICTOR = \
+        './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
 
     def __init__(self, door_id, videoInterface, url):
         self.url = url
@@ -20,20 +21,24 @@ class Main:
 
             if frame is not None:
                 # Send frame to another process for alignment
-                job = FaceAlignmentJob(frame, t, self.door_id, self.url, self.aligner)
+                job = FaceAlignmentJob(frame, t, self.door_id, self.url,
+                                       self.aligner)
                 job.run()
             else:
                 print 'frame is none'
+
 
 # Arguments - main.py doorNum cameraNum exit/entry
 # Main door = 0
 if __name__ == '__main__':
 
-    entry_url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000/submit_face/entry/'
-    exit_url = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000/submit_face/exit/'
+    BASE_URL = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000/'
 
-    #entry_url = 'http://localhost:5000/submit_face/entry/'
-    #exit_url = 'http://localhost:5000/submit_face/exit/'
+    entry_url = BASE_URL + 'submit_face/entry/'
+    exit_url = BASE_URL + 'submit_face/exit/'
+
+    # entry_url = 'http://localhost:5000/submit_face/entry/'
+    # exit_url = 'http://localhost:5000/submit_face/exit/'
 
     door_id = int(sys.argv[1])
     camera_id = int(sys.argv[2])

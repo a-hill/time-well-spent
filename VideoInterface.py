@@ -2,6 +2,7 @@ import cv2
 import time
 import subprocess
 
+
 class VideoInterface():
     def __init__(self, captureNo):
         self.captureNo = captureNo
@@ -34,7 +35,7 @@ class VideoInterface():
 
         if not ret:
             print "Failed to get frame from video stream"
-            frame = None # Check what this returns when reaching the end of video
+            frame = None  # Check what's returned when reached end of video
         return frame
 
     def get_frame_and_time(self):

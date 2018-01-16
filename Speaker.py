@@ -7,6 +7,7 @@ from Queue import PriorityQueue
 queue = PriorityQueue(10)
 app = Flask(__name__)
 
+
 @app.route('/speaker_time/', methods=['POST'])
 def get_total_time():
     total_time_pp = Flask.request.form['total_time_pp']
@@ -61,9 +62,11 @@ def get_time_string(total_num_seconds):
         s = " "
         if seconds > 1:
             s = "s "
-        # seconds_speech = "and " + speak.number_to_words(seconds) + " second" + s
+        # seconds_speech = "and " + speak.number_to_words(seconds) +
+        #                  " second" + s
         seconds_speech = speak.number_to_words(seconds) + " second" + s
     return hours_speech + mins_speech + seconds_speech
+
 
 if __name__ == "__main__":
     app.run(threaded=True, host='0.0.0.0')

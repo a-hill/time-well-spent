@@ -14,6 +14,7 @@ class TestFacialRecognition(unittest.TestCase):
         self.testSingleFilePath = "./test_data/tate-1/angle1-threefacessinglefile.mov"
         self.testStoreOneFace = "./test_data/tate-1/angle1-oneface.mov"
 
+
     # def test_can_store_face_on_entrace(self):
     #     videoInterface = VideoInterface(self.testStoreOneFace)
     #     face_reps = []
@@ -58,10 +59,6 @@ class TestFacialRecognition(unittest.TestCase):
                 if self.faceRecognition.is_same_person(face, r):
                     return True
             return False
-
-
-
-
 
 
 if __name__ == '__main__':
