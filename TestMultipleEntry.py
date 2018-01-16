@@ -23,7 +23,6 @@ class TestFacialRecognition(unittest.TestCase):
         faceAlignmentJob = FaceAlignmentJob(frame, t, 0, "", aligner)
         facesInRoom = faceAlignmentJob.align_faces()
 
-        print len(facesInRoom)
         self.assertTrue(len(facesInRoom) == 2)
 
 
