@@ -5,19 +5,19 @@ import openface
 
 
 class Main:
-    FACE_PREDICTOR = \
+    _FACE_PREDICTOR = \
         './../openface/models/dlib/shape_predictor_68_face_landmarks.dat'
 
-    def __init__(self, door_id, videoInterface, url):
+    def __init__(self, door_id, video_interface, url):
         self.url = url
         self.door_id = door_id
-        self.videoInterface = videoInterface
-        self.aligner = openface.AlignDlib(self.FACE_PREDICTOR)
+        self.video_interface = video_interface
+        self.aligner = openface.AlignDlib(self._FACE_PREDICTOR)
 
     def run(self):
         while True:
             # take frame and get time
-            frame, t = self.videoInterface.get_frame_and_time()
+            frame, t = self.video_interface.get_frame_and_time()
 
             if frame is not None:
                 # Send frame to another process for alignment
@@ -28,24 +28,21 @@ class Main:
                 print 'frame is none'
 
 
-# Arguments - main.py doorNum cameraNum exit/entry
+# Arguments - Main.py doorNum cameraNum exit/entry
 # Main door = 0
 if __name__ == '__main__':
 
-    BASE_URL = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000/'
+    _BASE_URL = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000/'
 
-    entry_url = BASE_URL + 'submit_face/entry/'
-    exit_url = BASE_URL + 'submit_face/exit/'
+    _entry_url = _BASE_URL + 'submit_face/entry/'
+    _exit_url = _BASE_URL + 'submit_face/exit/'
 
-    # entry_url = 'http://localhost:5000/submit_face/entry/'
-    # exit_url = 'http://localhost:5000/submit_face/exit/'
+    _door_id = int(sys.argv[1])
+    _camera_id = int(sys.argv[2])
 
-    door_id = int(sys.argv[1])
-    camera_id = int(sys.argv[2])
-
-    url = exit_url if sys.argv[3] == 'exit' else entry_url
+    _url = _exit_url if sys.argv[3] == 'exit' else _entry_url
     # One exit cam and one entry cam per computer
-    main = Main(door_id, VideoInterface(camera_id), url)
+    _main = Main(_door_id, VideoInterface(_camera_id), _url)
 
     # Does not create new process. Anything after this line will not execute
-    main.run()
+    _main.run()

@@ -2,16 +2,17 @@ import unittest
 import time
 from Speaker import Speaker
 
+
 class TestSpeaker(unittest.TestCase):
-    
+
     def test_seconds_correctly_to_string(self):
         speaker = Speaker()
-        test_1 = 4        
-        test_2 = 137        
-        test_3 = 4386        
-        test_4 = 120        
+        test_1 = 4
+        test_2 = 137
+        test_3 = 4386
+        test_4 = 120
         test_5 = 7260
-        
+
         answer_1 = "4 seconds "
         answer_2 = "2 minutes 17 seconds "
         answer_3 = "1 hours 13 minutes 6 seconds "
@@ -25,7 +26,7 @@ class TestSpeaker(unittest.TestCase):
         self.assertEqual(
             speaker.seconds_to_string(test_2),
             answer_2)
-            
+
         self.assertEqual(
             speaker.seconds_to_string(test_3),
             answer_3)
@@ -52,4 +53,3 @@ class TestSpeaker(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

@@ -8,50 +8,50 @@ import time
 class TestVideoInterface(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        self.defaultImageDims = 96
-        self.testImagePath = "../modern-times-test-resources/not-tate/" + \
-                             "alessio.jpg"
-        self.testVideoPath = "../modern-times-test-resources/not-tate/" + \
-                             "Abbie3.mov"
+        self.DEFAULT_IMAGE_DIMS = 96
+        self.TEST_IMAGE_PATH = "../modern-times-test-resources/not-tate/" \
+                               "alessio.jpg"
+        self.TEST_VIDEO_PATH = "../modern-times-test-resources/not-tate/" \
+                               "Abbie3.mov"
 
     def test_can_read_image_from_file(self):
-        image = VideoInterface(self.testImagePath)
-        testImage = image.get_image_from_file(self.testImagePath)
-        self.assertIsInstance(testImage, np.ndarray)
+        image = VideoInterface(self.TEST_IMAGE_PATH)
+        test_image = image.get_image_from_file(self.TEST_IMAGE_PATH)
+        self.assertIsInstance(test_image, np.ndarray)
 
     # This test commented out because uses webcam not video so not replicable
     # def test_can_read_frame_from_webcam(self):
-    #     videoInterface = VideoInterface(0)
-    #     frame = videoInterface.get_frame()
+    #     video_interface = VideoInterface(0)
+    #     frame = video_interface.get_frame()
     #     self.assertIsInstance(frame, np.ndarray)
 
     def test_can_read_frame_from_video(self):
-        videoAbbie = VideoInterface(self.testVideoPath)
-        frame = videoAbbie.get_frame()
+        video_test_footage = VideoInterface(self.TEST_VIDEO_PATH)
+        frame = video_test_footage.get_frame()
         self.assertIsInstance(frame, np.ndarray)
-        videoAbbie.destroy_capture()
+        video_test_footage.destroy_capture()
 
     def test_can_get_different_frames_from_video(self):
-        videoAbbie = VideoInterface(self.testVideoPath)
-        frame1 = videoAbbie.get_frame()
-        frame2 = videoAbbie.get_frame()
+        video_test_footage = VideoInterface(self.TEST_VIDEO_PATH)
+        frame1 = video_test_footage.get_frame()
+        frame2 = video_test_footage.get_frame()
         self.assertFalse((frame1 == frame2).all())
-        videoAbbie.destroy_capture()
+        video_test_footage.destroy_capture()
 
     def test_cannot_destroy_capture_for_images(self):
-        videoAbbie = VideoInterface(self.testVideoPath)
-        self.assertFalse(videoAbbie.destroy_capture())
+        video_test_footage = VideoInterface(self.TEST_VIDEO_PATH)
+        self.assertFalse(video_test_footage.destroy_capture())
 
     def test_can_get_frames_1_second_apart(self):
-        videoAbbie = VideoInterface(self.testVideoPath)
+        video_test_footage = VideoInterface(self.TEST_VIDEO_PATH)
         frame1 = None
         while frame1 is None:
-            frame1, time1 = videoAbbie.get_frame_and_time()
+            frame1, time1 = video_test_footage.get_frame_and_time()
 
         time.sleep(1)
         frame2 = None
         while frame2 is None:
-            frame2, time2 = videoAbbie.get_frame_and_time()
+            frame2, time2 = video_test_footage.get_frame_and_time()
 
         self.assertIsInstance(frame1, np.ndarray)
         self.assertIsInstance(frame2, np.ndarray)
@@ -73,5 +73,5 @@ class TestVideoInterface(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    runner = unittest.TextTestRunner()
-    unittest.main(testRunner=runner)
+    _runner = unittest.TextTestRunner()
+    unittest.main(testRunner=_runner)

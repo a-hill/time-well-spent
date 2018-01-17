@@ -3,20 +3,20 @@ import time
 import subprocess
 
 
-class VideoInterface():
-    def __init__(self, captureNo):
-        self.captureNo = captureNo
-        self.capture = None
+class VideoInterface:
+    def __init__(self, capture_num):
+        self.capture_num = capture_num
+        self._capture = None
         # Set filePath for reading from video file
         # If reading from video, setup_camera() must not be called
-        if isinstance(captureNo, str):
-            self.readingFromVideoFile = True
+        if isinstance(capture_num, str):
+            self._reading_from_video_file = True
         else:
-            self.readingFromVideoFile = False
+            self._reading_from_video_file = False
 
     def make_capture(self):
-        self.capture = cv2.VideoCapture(self.captureNo)
-        if not self.readingFromVideoFile:
+        self._capture = cv2.VideoCapture(self.capture_num)
+        if not self._reading_from_video_file:
             self.setup_camera()
 
     def setup_camera(self):
@@ -27,18 +27,19 @@ class VideoInterface():
 
     def set_variable(self, variable, value):
         subprocess.check_call(
-            "v4l2-ctl -d /dev/video" + str(self.captureNo) +
+            "v4l2-ctl -d /dev/video" + str(self.capture_num) +
             ' -c ' + variable + "=" + str(value), shell=True
         )
 
-    def get_image_from_file(self, path):
+    @staticmethod
+    def get_image_from_file(path):
         return cv2.imread(path)
 
     def get_frame(self):
-        if self.capture is None:
+        if self._capture is None:
             self.make_capture()
 
-        ret, frame = self.capture.read()
+        ret, frame = self._capture.read()
 
         if not ret:
             print "Failed to get frame from video stream"
@@ -51,7 +52,7 @@ class VideoInterface():
         return frame, t
 
     def destroy_capture(self):
-        if self.capture is not None:
-            self.capture.release()
+        if self._capture is not None:
+            self._capture.release()
             return True
         return False

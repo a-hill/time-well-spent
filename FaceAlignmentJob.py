@@ -1,17 +1,19 @@
 import StringIO
 import requests
 import cv2
-import time
 from PIL import Image
 from termcolor import colored
 
 
 class FaceAlignmentJob:
-    OUTER_EYES_AND_NOSE = [36, 45, 33]
-    BB_SIZE_THRESHOLD = 4000
+    """Runnable, ran per frame, calls align_face
+    on all faces in the frame and posts them to the server"""
 
-    DEFAULT_IMAGE_DIMENSION = 96
-    TIMEOUT = 1.0  # in seconds
+    _OUTER_EYES_AND_NOSE = [36, 45, 33]
+    _BB_SIZE_THRESHOLD = 4000
+
+    _DEFAULT_IMAGE_DIMENSION = 96
+    _TIMEOUT = 1.0  # in seconds
 
     def __init__(self, frame, t, door, url, aligner):
         self.frame = frame
@@ -21,8 +23,6 @@ class FaceAlignmentJob:
         self.url = url
 
     def run(self):
-        start = time.clock()
-
         form = {
             'time': str(int(self.t)),
             'door': self.door,
@@ -45,8 +45,8 @@ class FaceAlignmentJob:
             im = Image.fromarray(face)
             buf = StringIO.StringIO()
             im.save(buf, "JPEG", quality=10)
-            jpegface = buf.getvalue()
-            files = {'upload_file': jpegface}
+            jpeg_face = buf.getvalue()
+            files = {'upload_file': jpeg_face}
 
             try:
                 requests.post(self.url, files=files,
@@ -57,26 +57,24 @@ class FaceAlignmentJob:
                               'aligned face', 'red')
 
             # direction = 'entry' if 'entry' in self.url else 'exit'
-            filename = './faces/' + form['time'] + '-' + direction + '-' + str(i) + '.jpg'
+            filename = './faces/' + form['time'] + '-' + \
+                       direction + '-' + str(i) + '.jpg'
 
             cv2.imwrite(filename, face)
 
-        # print 'This face took: ' + str(time.clock() - start) +
-        # ' seconds to align.'
-
     def align_faces(self):
         # Converts image to format expected by aligner
-        rgbImg = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+        rgb_img = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
 
-        faces = self.aligner.getAllFaceBoundingBoxes(rgbImg)
-        alignedFaces = []
+        faces = self.aligner.getAllFaceBoundingBoxes(rgb_img)
+        aligned_faces = []
         # Crops and rotates each bounding box in the frame
         for face in faces:
-            if face.width() * face.height() > self.BB_SIZE_THRESHOLD:
-                aligned = self.aligner.align(self.DEFAULT_IMAGE_DIMENSION,
-                                             rgbImg, face,
-                                             landmarkIndices=self.OUTER_EYES_AND_NOSE)
+            if face.width() * face.height() > self._BB_SIZE_THRESHOLD:
+                aligned = self.aligner.align(
+                    self._DEFAULT_IMAGE_DIMENSION, rgb_img, face,
+                    landmarkIndices=self._OUTER_EYES_AND_NOSE)
                 if aligned is not None:
-                    alignedFaces.append(aligned)
+                    aligned_faces.append(aligned)
 
-        return alignedFaces
+        return aligned_faces

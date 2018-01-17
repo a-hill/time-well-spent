@@ -4,7 +4,7 @@ from termcolor import colored
 from gtts import gTTS
 
 
-class Speaker():
+class Speaker:
     def __init__(self):
         pass
 
@@ -24,7 +24,8 @@ class Speaker():
         except:
             print colored('WARNING OS ERROR IN SPEAKER', 'red')
 
-    def seconds_to_string(self, total_time_pp):
+    @staticmethod
+    def seconds_to_string(total_time_pp):
         hours = int(total_time_pp / 3600)
         minutes = int((total_time_pp % 3600) / 60)
         seconds = int(total_time_pp % 60)
@@ -36,5 +37,6 @@ class Speaker():
         speech = hours_speech + mins_speech + seconds_speech
         return speech
 
-    def should_say(self, last_message):
+    @staticmethod
+    def should_say(last_message):
         return abs(last_message - time.time()) > 5
