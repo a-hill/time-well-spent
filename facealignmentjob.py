@@ -13,7 +13,7 @@ class FaceAlignmentJob:
     _BB_SIZE_THRESHOLD = 4000
 
     _DEFAULT_IMAGE_DIMENSION = 96
-    _TIMEOUT = 1.0  # in seconds
+    _TIMEOUT = 2.0  # in seconds
 
     def __init__(self, frame, t, door, url, aligner):
         self.frame = frame
@@ -50,7 +50,7 @@ class FaceAlignmentJob:
 
             try:
                 requests.post(self.url, files=files,
-                              data=form, timeout=self.TIMEOUT)
+                              data=form, timeout=self._TIMEOUT)
             except:
                 print colored('client on door: ' + str(self.door) +
                               ' failed to connect to server, not sending ' +
