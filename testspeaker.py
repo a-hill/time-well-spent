@@ -1,6 +1,6 @@
 import unittest
 import time
-from Speaker import Speaker
+from speaker import Speaker
 
 
 class TestSpeaker(unittest.TestCase):

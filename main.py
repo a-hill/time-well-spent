@@ -1,6 +1,6 @@
-from VideoInterface import VideoInterface
+from videointerface import VideoInterface
 import sys
-from FaceAlignmentJob import FaceAlignmentJob
+from facealignmentjob import FaceAlignmentJob
 import openface
 
 
@@ -28,7 +28,7 @@ class Main:
                 print 'frame is none'
 
 
-# Arguments - Main.py doorNum cameraNum exit/entry
+# Arguments - main.py doorNum cameraNum exit/entry
 # Main door = 0
 if __name__ == '__main__':
 

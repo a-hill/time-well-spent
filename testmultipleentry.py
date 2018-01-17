@@ -1,6 +1,6 @@
 import unittest
-from FaceAlignmentJob import FaceAlignmentJob
-from VideoInterface import VideoInterface
+from facealignmentjob import FaceAlignmentJob
+from videointerface import VideoInterface
 import openface
 
 

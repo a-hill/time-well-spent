@@ -1,6 +1,6 @@
 import unittest
 
-from VideoInterface import VideoInterface
+from videointerface import VideoInterface
 import numpy as np
 import time
 

@@ -2,7 +2,7 @@ import time
 import requests
 import sys
 from termcolor import colored
-from Speaker import Speaker
+from speaker import Speaker
 
 _POLL_RATE = 0.1  # in seconds
 _URL = 'http://modern-times-1.uksouth.cloudapp.azure.com:5000'
