@@ -1,5 +1,5 @@
 # 'Time Well Spent'
-### Imperial Third Year Software Engineering Group Project, in collaboration with artist collective TheyAreHere and Tate Modern
+#### Imperial Third Year Software Engineering Group Project, in collaboration with artist collective TheyAreHere and Tate Modern.
 
 
 #### Project Members:
@@ -11,3 +11,7 @@
 - Max Crowther
 
 - Ria Jha
+
+- Alessio Incitti
+
+- Abbie Howell
